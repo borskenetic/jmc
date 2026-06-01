@@ -108,7 +108,7 @@
 
     <!-- Page Banner (kept from your header layout) -->
     <div class="head">
-        <img src="{{ asset('images/Bannernew.jpg') }}" alt="Banner" class="banner-img" hidden>
+        <img src="{{ \App\Support\VersionedAsset::url('images/Bannernew.jpg') }}" alt="Banner" class="banner-img" hidden>
     </div>
 
     <!-- Feedbacks list content (no footer) -->

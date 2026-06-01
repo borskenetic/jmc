@@ -14,14 +14,6 @@ class Branding
      */
     public static function stylesheetUrl(): string
     {
-        $path = self::cssPath();
-        $url = asset($path);
-        $full = public_path($path);
-
-        if (is_file($full)) {
-            return $url.'?v='.filemtime($full);
-        }
-
-        return $url;
+        return VersionedAsset::url(self::cssPath());
     }
 }

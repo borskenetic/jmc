@@ -5,5 +5,5 @@
 @endsection
 
 @section('banner')
-    <img src="{{ asset('images/Bannernew.jpg') }}" alt="Banner" class="banner-img">
+    <img src="{{ \App\Support\VersionedAsset::url('images/Bannernew.jpg') }}" alt="Banner" class="banner-img">
 @endsection

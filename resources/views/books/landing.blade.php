@@ -22,7 +22,7 @@
 
     <!-- Hero Banner -->
     <section class="hero-text">
-        <img src="{{ asset('images/Bannernew.jpg') }}" alt="Banner" class="banner-img">
+        <img src="{{ \App\Support\VersionedAsset::url('images/Bannernew.jpg') }}" alt="Banner" class="banner-img">
     </section>
 
     <h1 style="text-align: center; margin-bottom: 30px; margin-top: 30px;">New Arrival Books</h1>
