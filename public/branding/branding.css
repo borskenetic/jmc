@@ -10,10 +10,10 @@
     --brand-page-bg: #f5f7fa;
 
     /* Navigation */
-    --brand-nav-link: #1f7a1f;
-    --brand-nav-link-hover: #145214;
-    --brand-nav-dropdown-hover-bg: #e8f5e9;
-    --brand-nav-dropdown-hover-text: #145214;
+    --brand-nav-link:rgb(0, 0, 0);
+    --brand-nav-link-hover: #000;
+    --brand-nav-dropdown-hover-bg: #000;
+    --brand-nav-dropdown-hover-text: #000;
 
     /* Logout / primary chrome buttons */
     --brand-logout-bg: #1f7a1f;

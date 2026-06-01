@@ -87,6 +87,8 @@ See [database/migrations/README.md](database/migrations/README.md) for the table
 
 Edit colors and fonts in `public/branding/branding.css` or set `BRANDING_CSS` in `.env`.
 
+**Hostinger / production:** After editing branding CSS, deploy `public/branding/branding.css` (commit + pull, or upload via FTP). Then run `php artisan config:clear` on the server if you changed `BRANDING_CSS` in `.env`. Purge **LiteSpeed Cache** in hPanel if colors still look old. The app appends `?v=` (file modification time) to the stylesheet URL so browsers fetch the latest file after deploy.
+
 ## ID card assets
 
 Student IDs use **three template sets** (selected from each student’s `educational_level`):
