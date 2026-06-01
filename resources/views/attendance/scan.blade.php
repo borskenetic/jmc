@@ -3,40 +3,17 @@
 <head>
   <title>{{ config('app.name') }} — Attendance</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="{{ asset('css/attendance/scan.css') }}">
+  <link rel="stylesheet" href="{{ \App\Support\Branding::stylesheetUrl() }}">
+  <link rel="stylesheet" href="{{ \App\Support\VersionedAsset::url('css/attendance/scan.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-  <style>
-    .marquee-container {
-      width: 100%;
-      overflow: hidden;
-      background-color: #222;
-      color: #fff;
-      border-top: 2px solid #444;
-      padding: 15px 0;
-      box-sizing: border-box;
-    }
-    .marquee {
-      display: inline-block;
-      white-space: nowrap;
-      padding-left: 100%;
-      animation: scroll-text 15s linear infinite;
-      font-family: 'Poppins', sans-serif;
-      font-weight: 700;
-      font-size: 24px;
-    }
-    @keyframes scroll-text {
-      0% { transform: translateX(0%); }
-      100% { transform: translateX(-100%); }
-    }
-  </style>
 </head>
-<body>
+<body class="scan-kiosk-page">
 
 <header>
   <div class="header">
     <div class="logo-title">
       <img src="{{ asset('images/pantasLogo.png') }}" alt="Logo">
-      <div class="system-title">POWERED BY PANTAS</div>
+      <div class="system-title">{{ config('app.name') }}</div>
     </div>
   </div>
 </header>

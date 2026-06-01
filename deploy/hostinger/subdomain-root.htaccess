@@ -1,0 +1,12 @@
+# Hostinger subdomain when document root is public_html/{subdomain}/ (project root).
+# Copy to: public_html/acd/.htaccess  (for acd.pantas.org)
+#
+# Prefer instead: set document root to public_html/acd/public and do NOT use this file.
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Serve existing files under public/ (assets, images, css)
+    RewriteCond %{REQUEST_URI} !^/public/
+    RewriteRule ^(.*)$ public/$1 [L,QSA]
+</IfModule>

@@ -4,7 +4,8 @@
     </IfModule>
 
     RewriteEngine On
-    RewriteBase /libtest/
+    # Document root should be this public/ folder (e.g. Hostinger: public_html/acd/public).
+    # RewriteBase /
 
     # Handle Authorization Header
     RewriteCond %{HTTP:Authorization} .

@@ -5,7 +5,7 @@
         }
         
         .school-name{
-            color: red;
+            color: var(--brand-school-name-color, var(--brand-nav-link, #29abe2));
             margin-left: 5px;
             font-size: 1.3rem;
             font-weight: bold;
@@ -352,7 +352,7 @@
             color: #22333b;
         }
 #cav{
-    color: #1f7a1f;
+    color: var(--brand-nav-link, #29abe2);
 }
 
 

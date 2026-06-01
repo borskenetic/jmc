@@ -1,4 +1,4 @@
-# CMU migrations
+# ACD attendance system migrations
 
 ## Active migrations (`2026_05_22_*`)
 

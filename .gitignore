@@ -67,6 +67,18 @@ desktop.ini
 /public/videos/*.mp4
 /videos/*.mp4
 /images/id_templates/
+/public/images/id_templates/*
+!/public/images/id_templates/.gitkeep
+!/public/images/id_templates/README.md
+
+# Legacy / accidental upload paths (use profile_pictures/ in app)
+/public/images/profile_picture/*
+!/public/images/profile_picture/.gitkeep
+/public/images/student_profiles/*
+!/public/images/student_profiles/.gitkeep
+
+# Hostinger default placeholder (created by hPanel, not part of the app)
+/default.php
 
 # Do not commit migration archives
 /database/migrations/*.zip

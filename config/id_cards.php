@@ -12,7 +12,7 @@ return [
 
         'grade_school' => [
             'label' => 'GRADE SCHOOL',
-            'accent' => '#2E7D32',
+            'accent' => '#29abe2',
             'accent_bar' => true,
             'show_level_label' => true,
 
@@ -52,7 +52,7 @@ return [
 
         'high_school' => [
             'label' => 'HIGH SCHOOL',
-            'accent' => '#1565C0',
+            'accent' => '#1a8fc4',
             'accent_bar' => true,
             'show_level_label' => true,
 
@@ -92,7 +92,7 @@ return [
 
         'college' => [
             'label' => 'COLLEGE',
-            'accent' => '#6A1B9A',
+            'accent' => '#125a82',
             'accent_bar' => false,
             'show_level_label' => false,
 

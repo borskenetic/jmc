@@ -1,53 +1,58 @@
 /*
- * CMU attendance — edit these variables to rebrand (colors + font).
- * Same idea as demo-eidt/public/branding/branding.css
+ * Assumption College of Davao (ACD) — library attendance branding.
+ * Colors aligned with https://acd.edu.ph (sky blue hero, white type on blue).
  */
 :root {
-    /* Typography — Inter matches FAQ / marketing headings */
     --brand-font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
 
+    /* ACD palette */
+    --brand-primary: #29abe2;
+    --brand-primary-dark: #1a8fc4;
+    --brand-primary-darker: #125a82;
+    --brand-primary-rgb: 41, 171, 226;
+
     /* Page */
-    --brand-page-bg: #f5f7fa;
+    --brand-page-bg: #f4f9fc;
 
-    /* Navigation */
-    --brand-nav-link:rgb(0, 0, 0);
-    --brand-nav-link-hover: #000;
-    --brand-nav-dropdown-hover-bg: #000;
-    --brand-nav-dropdown-hover-text: #000;
+    /* Navigation (links on light background) */
+    --brand-nav-link: var(--brand-primary);
+    --brand-nav-link-hover: var(--brand-primary-dark);
+    --brand-nav-dropdown-hover-bg: #e3f4fc;
+    --brand-nav-dropdown-hover-text: var(--brand-primary-darker);
+    --brand-nav-link-active: var(--brand-primary);
 
-    /* Logout / primary chrome buttons */
-    --brand-logout-bg: #1f7a1f;
+    /* Logout / primary chrome */
+    --brand-logout-bg: var(--brand-primary);
     --brand-logout-text: #ffffff;
-    --brand-logout-hover-bg: #ffb845;
-    --brand-logout-hover-text: #22333b;
+    --brand-logout-hover-bg: #ffffff;
+    --brand-logout-hover-text: var(--brand-primary);
 
-    /* Data page card title bar (Registered Students / Employees) */
-    --brand-card-header-bg: #22333b;
+    /* Data page card title bar */
+    --brand-card-header-bg: var(--brand-primary-darker);
     --brand-card-header-text: #ffffff;
 
     /* Tables */
-    --brand-table-header-bg: #1f7a1f;
+    --brand-table-header-bg: var(--brand-primary);
     --brand-table-header-text: #ffffff;
 
     /* Primary actions (filter, add, submit) */
-    --brand-button-bg: #1f7a1f;
-    /* Keep in sync with --brand-button-bg for Bootstrap alpha utilities */
-    --brand-button-bg-rgb: 31, 122, 31;
+    --brand-button-bg: var(--brand-primary);
+    --brand-button-bg-rgb: var(--brand-primary-rgb);
     --brand-button-text: #ffffff;
-    --brand-button-hover-bg: #ffb845;
-    --brand-button-hover-text: #22333b;
-
-    /* Active nav / highlights (used by some pages like scanner) */
-    --brand-nav-link-active: var(--brand-button-hover-bg);
+    --brand-button-hover-bg: var(--brand-primary-dark);
+    --brand-button-hover-text: #ffffff;
 
     /* Secondary / warning */
     --brand-warning-bg: #ffb845;
-    --brand-warning-text: #22333b;
+    --brand-warning-text: var(--brand-primary-darker);
 
     /* Footer */
-    --brand-footer-bg: #1c2b2d;
+    --brand-footer-bg: var(--brand-primary-darker);
 
-    /* Bootstrap hooks */
-    --bs-primary: var(--brand-button-bg);
-    --bs-primary-rgb: var(--brand-button-bg-rgb);
+    /* Optional heading accent (legacy book pages) */
+    --brand-school-name-color: var(--brand-primary);
+
+    /* Bootstrap */
+    --bs-primary: var(--brand-primary);
+    --bs-primary-rgb: var(--brand-primary-rgb);
 }

@@ -1,8 +1,8 @@
-# CMU Library Attendance System
+# ACD Library Attendance System
 
-Laravel application for library **attendance scanning**, patron (student) records, employee records, ID cards, attendance logs, and admin tools.
+Laravel application for **Assumption College of Davao (ACD)** library **attendance scanning**, patron (student) records, employee records, ID cards, attendance logs, and admin tools.
 
-Repository: [github.com/borskenetic/attendance-system](https://github.com/borskenetic/attendance-system)
+First time pushing to GitHub? See **[REPO_SETUP.md](REPO_SETUP.md)**.
 
 ## Requirements
 
@@ -15,8 +15,8 @@ Repository: [github.com/borskenetic/attendance-system](https://github.com/borske
 ## Quick start (new database)
 
 ```bash
-git clone https://github.com/borskenetic/attendance-system.git
-cd attendance-system
+git clone https://github.com/YOUR_ORG/YOUR_REPO.git
+cd YOUR_REPO
 
 composer install
 cp .env.example .env
@@ -26,7 +26,7 @@ php artisan key:generate
 Create an empty MySQL database, then set `.env`:
 
 ```env
-DB_DATABASE=cmu_local
+DB_DATABASE=acd_local
 DB_USERNAME=root
 DB_PASSWORD=
 ```
@@ -87,7 +87,7 @@ See [database/migrations/README.md](database/migrations/README.md) for the table
 
 Edit colors and fonts in `public/branding/branding.css` or set `BRANDING_CSS` in `.env`.
 
-**Hostinger / production:** After editing branding CSS, deploy `public/branding/branding.css` (commit + pull, or upload via FTP). Then run `php artisan config:clear` on the server if you changed `BRANDING_CSS` in `.env`. Purge **LiteSpeed Cache** in hPanel if colors still look old. The app appends `?v=` (file modification time) to the stylesheet URL so browsers fetch the latest file after deploy.
+**Hostinger / production:** Deploy `public/branding/branding.css` (git pull or FTP into `public_html/.../public/branding/`). Run `php artisan config:clear` if you changed `BRANDING_CSS` in `.env`. Purge **LiteSpeed Cache** in hPanel if colors look stale. Stylesheets use `?v=` from file content hash (`VersionedAsset`); optional `BRANDING_ASSET_VERSION` in `.env` for a manual bust.
 
 ## ID card assets
 
@@ -126,6 +126,14 @@ SMS_MODEM_API_KEY=your-secret-api-key
 - Run `composer install --no-dev` on production
 - Set `APP_DEBUG=false`, `APP_ENV=production`
 - `php artisan config:cache` and `php artisan route:cache` after deploy
+
+### Hostinger (pantas.org + subdomains)
+
+Subdomain apps (e.g. `acd.pantas.org`) usually live in **`public_html/acd/`** with document root **`public_html/acd/public`**.
+
+See **[deploy/hostinger/README.md](deploy/hostinger/README.md)** for folder layout, `.env` (`APP_URL=https://acd.pantas.org`), and `.htaccess` options.
+
+Remove the old `RewriteBase /libtest/` in `public/.htaccess` if you still see broken routes on the server.
 
 ## License
 
