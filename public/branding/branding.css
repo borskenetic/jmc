@@ -31,9 +31,14 @@
 
     /* Primary actions (filter, add, submit) */
     --brand-button-bg: #1f7a1f;
+    /* Keep in sync with --brand-button-bg for Bootstrap alpha utilities */
+    --brand-button-bg-rgb: 31, 122, 31;
     --brand-button-text: #ffffff;
     --brand-button-hover-bg: #ffb845;
     --brand-button-hover-text: #22333b;
+
+    /* Active nav / highlights (used by some pages like scanner) */
+    --brand-nav-link-active: var(--brand-button-hover-bg);
 
     /* Secondary / warning */
     --brand-warning-bg: #ffb845;
@@ -44,5 +49,5 @@
 
     /* Bootstrap hooks */
     --bs-primary: var(--brand-button-bg);
-    --bs-primary-rgb: 31, 122, 31;
+    --bs-primary-rgb: var(--brand-button-bg-rgb);
 }
