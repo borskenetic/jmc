@@ -14,6 +14,7 @@ use App\Http\Controllers\PendingStudentController;
 use App\Http\Controllers\SmsController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\ProspectusController;
+use App\Http\Controllers\Sf2ReportController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
 
@@ -87,6 +88,18 @@ Route::middleware(['auth', 'can:isAdminOrStaff'])->group(function () {
     Route::get('/attendance-logs/reports/export', [AttendanceLogController::class, 'reportsExportCsv'])->name('attendance_logs.reports.export');
     Route::get('/attendance-logs/export/excel', [AttendanceLogController::class, 'exportExcel'])->name('attendance_logs.export.excel');
     Route::get('/attendance-logs/export/pdf', [AttendanceLogController::class, 'exportPdf'])->name('attendance_logs.export.pdf');
+
+    Route::prefix('sf2')->name('sf2.')->group(function () {
+        Route::get('/', [Sf2ReportController::class, 'index'])->name('index');
+        Route::get('/create', [Sf2ReportController::class, 'create'])->name('create');
+        Route::post('/', [Sf2ReportController::class, 'store'])->name('store');
+        Route::get('/{sf2}', [Sf2ReportController::class, 'show'])->name('show');
+        Route::get('/{sf2}/edit', [Sf2ReportController::class, 'edit'])->name('edit');
+        Route::put('/{sf2}', [Sf2ReportController::class, 'update'])->name('update');
+        Route::delete('/{sf2}', [Sf2ReportController::class, 'destroy'])->name('destroy');
+        Route::get('/{sf2}/pdf', [Sf2ReportController::class, 'pdf'])->name('pdf');
+        Route::get('/{sf2}/excel', [Sf2ReportController::class, 'excel'])->name('excel');
+    });
 
     Route::get('/students', [StudentController::class, 'index'])->name('students.index');
     Route::get('/students/report', [StudentController::class, 'index'])->name('students.report');

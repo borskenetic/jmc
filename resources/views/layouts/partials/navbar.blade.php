@@ -18,11 +18,12 @@
         @auth
             @can('isAdminOrStaff')
                 <div class="nav-dropdown">
-                    <button type="button" class="nav-dropdown-button {{ $dropActive(['attendance.scan', 'attendance.process', 'attendance.section', 'attendance_logs.index', 'attendance.changeVideo', 'attendance.uploadVideo', 'attendance.feedback.settings*', 'attendance.section.settings*']) }}">
+                    <button type="button" class="nav-dropdown-button {{ $dropActive(['attendance.scan', 'attendance.process', 'attendance.section', 'attendance_logs.index', 'attendance.changeVideo', 'attendance.uploadVideo', 'attendance.feedback.settings*', 'attendance.section.settings*', 'sf2.*']) }}">
                         Attendance
                     </button>
                     <div class="nav-dropdown-content">
-                        <a href="{{ route('attendance.scan') }}" target="_blank" rel="noopener" class="{{ $linkActive(['attendance.scan']) }}">Attendance</a>
+                        <a href="{{ route('sf2.index') }}" class="{{ $linkActive(['sf2.*']) }}">School Form 2 (SF2)</a>
+                        <a href="{{ route('attendance.scan') }}" target="_blank" rel="noopener" class="{{ $linkActive(['attendance.scan']) }}">Attendance Scanner</a>
                         <a href="{{ route('attendance_logs.index') }}" class="{{ $linkActive(['attendance_logs.index']) }}">Attendance Logs</a>
                         <a href="{{ route('attendance.changeVideo') }}" class="{{ $linkActive(['attendance.changeVideo', 'attendance.uploadVideo']) }}">Manage Video</a>
                         <a href="{{ route('attendance.section.settings') }}" class="{{ $linkActive(['attendance.section.settings*']) }}">Section Picker</a>

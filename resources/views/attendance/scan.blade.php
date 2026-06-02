@@ -13,7 +13,7 @@
   <div class="header">
     <div class="logo-title">
       <img src="{{ asset('images/pantasLogo.png') }}" alt="Logo">
-      <div class="system-title">{{ config('app.name') }}</div>
+      <div class="system-title">Powered by Pantas</div>
     </div>
   </div>
 </header>

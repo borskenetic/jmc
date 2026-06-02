@@ -71,12 +71,26 @@ See [database/migrations/README.md](database/migrations/README.md) for the table
 
 **Verified:** `php artisan migrate:fresh --seed` completes successfully on a clean database.
 
+## School Form 2 (SF2)
+
+Manual DepEd **Daily Attendance Report of Learners** (Kinder–12):
+
+1. Log in as admin/staff → **Attendance → School Form 2 (SF2)**.
+2. Create a report: school header, grade, section, month, learner names (generate rows or add one-by-one).
+3. For each learner, list **absent** and **tardy** dates (`YYYY-MM-DD`, one per line). Other weekdays in that month count as present.
+4. Save → preview → **Download Excel** (official DepEd `.xlsx`) or **PDF** (quick preview).
+
+**Best print quality:** use **Excel** export, then print or Save as PDF from Excel/LibreOffice. See [docs/sf2/README.md](docs/sf2/README.md).
+
+Routes: `/sf2`, `/sf2/create`. After deploy, upload `resources/views/sf2/` and `resources/views/pdf/sf2*` and run `php artisan view:clear`.
+
 ## Main routes
 
 | URL | Description |
 |-----|-------------|
 | `/` | Public home / FAQ |
 | `/attendance` | Kiosk scanner |
+| `/sf2` | SF2 reports (staff) |
 | `/login` | Staff / admin login |
 | `/students` | Student list |
 | `/employees` | Employee list |
