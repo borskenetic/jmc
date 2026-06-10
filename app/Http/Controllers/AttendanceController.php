@@ -31,14 +31,32 @@ class AttendanceController extends Controller
         ]));
     }
 
+    protected function effectiveLogoutFeedbackEnabled(): bool
+    {
+        if (! config('attendance.logout_feedback_enabled')) {
+            return false;
+        }
+
+        return Setting::logoutFeedbackEnabled();
+    }
+
+    protected function effectiveSectionPickerEnabled(): bool
+    {
+        if (! config('attendance.section_picker_enabled')) {
+            return false;
+        }
+
+        return Setting::sectionPickerEnabled();
+    }
+
     /** @return array<string, mixed> */
     protected function scannerViewData(): array
     {
         $departure = app(StudentDeparturePolicy::class);
 
         return [
-            'logoutFeedbackEnabled' => Setting::logoutFeedbackEnabled(),
-            'sectionPickerEnabled' => Setting::sectionPickerEnabled(),
+            'logoutFeedbackEnabled' => $this->effectiveLogoutFeedbackEnabled(),
+            'sectionPickerEnabled' => $this->effectiveSectionPickerEnabled(),
             'attendanceSections' => Setting::attendanceSections(),
             'earlyDepartureEnabled' => $departure->isEnabled(),
             'earlyDepartureCutoffLabel' => $departure->earliestOutLabel(),
@@ -47,6 +65,10 @@ class AttendanceController extends Controller
 
     public function feedbackSettings()
     {
+        if (! config('attendance.logout_feedback_enabled')) {
+            abort(404);
+        }
+
         return view('attendance.feedback_settings', [
             'enabled' => Setting::logoutFeedbackEnabled(),
         ]);
@@ -54,6 +76,10 @@ class AttendanceController extends Controller
 
     public function updateFeedbackSettings(Request $request)
     {
+        if (! config('attendance.logout_feedback_enabled')) {
+            abort(404);
+        }
+
         $request->validate([
             'enabled' => 'required|in:0,1',
         ]);
@@ -70,6 +96,10 @@ class AttendanceController extends Controller
 
     public function sectionSettings()
     {
+        if (! config('attendance.section_picker_enabled')) {
+            abort(404);
+        }
+
         return view('attendance.section_settings', [
             'enabled' => Setting::sectionPickerEnabled(),
             'sections' => Setting::attendanceSections(),
@@ -78,6 +108,10 @@ class AttendanceController extends Controller
 
     public function updateSectionSettings(Request $request)
     {
+        if (! config('attendance.section_picker_enabled')) {
+            abort(404);
+        }
+
         $request->validate([
             'enabled' => 'required|in:0,1',
             'sections' => 'required|array|min:1',
@@ -176,8 +210,8 @@ class AttendanceController extends Controller
             'type' => 'student',
             'next_status' => $nextStatus,
             'student_id' => $student->id,
-            'logout_feedback_enabled' => Setting::logoutFeedbackEnabled(),
-            'section_picker_enabled' => Setting::sectionPickerEnabled(),
+            'logout_feedback_enabled' => $this->effectiveLogoutFeedbackEnabled(),
+            'section_picker_enabled' => $this->effectiveSectionPickerEnabled(),
             'student' => [
                 'id' => $student->id,
                 'firstname' => $student->firstname,
@@ -235,7 +269,7 @@ class AttendanceController extends Controller
         return response()->json([
             'status' => $newStatus,
             'scanned_at' => $log->scanned_at->format('Y-m-d h:i:s A'),
-            'logout_feedback_enabled' => Setting::logoutFeedbackEnabled(),
+            'logout_feedback_enabled' => $this->effectiveLogoutFeedbackEnabled(),
         ]);
     }
 

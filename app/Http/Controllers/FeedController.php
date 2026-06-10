@@ -10,7 +10,7 @@ class FeedController extends Controller
 {
     public function store(Request $request)
     {
-        if (! Setting::logoutFeedbackEnabled()) {
+        if (! config('attendance.logout_feedback_enabled') || ! Setting::logoutFeedbackEnabled()) {
             return response()->json(['success' => false, 'message' => 'Logout feedback is disabled.'], 403);
         }
 

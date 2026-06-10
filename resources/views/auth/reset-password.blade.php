@@ -1,39 +1,61 @@
-<x-guest-layout>
-    <form method="POST" action="{{ route('password.store') }}">
+@extends('layouts.auth')
+
+@section('title', 'New password')
+
+@section('content')
+    <a href="{{ route('login') }}" class="auth-back" aria-label="Back to sign in">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" aria-hidden="true">
+            <path d="M10 12L6 8l4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Back to sign in
+    </a>
+
+    <h1 class="auth-card__title">Choose a new password</h1>
+    <p class="auth-card__subtitle">Enter your email and a new password below. Password must be at least 6 characters.</p>
+
+    <form method="POST" action="{{ route('password.store') }}" novalidate>
         @csrf
 
-        <!-- Password Reset Token -->
         <input type="hidden" name="token" value="{{ $request->route('token') }}">
 
-        <!-- Email Address -->
-        <div>
-            <x-input-label for="email" :value="__('Email')" />
-            <x-text-input id="email" class="block mt-1 w-full" type="email" name="email" :value="old('email', $request->email)" required autofocus autocomplete="username" />
-            <x-input-error :messages="$errors->get('email')" class="mt-2" />
+        <div class="auth-field">
+            <label for="email">Email</label>
+            <input
+                type="email"
+                id="email"
+                name="email"
+                class="auth-input"
+                value="{{ old('email', $request->email) }}"
+                required
+                autofocus
+                autocomplete="username"
+            >
         </div>
 
-        <!-- Password -->
-        <div class="mt-4">
-            <x-input-label for="password" :value="__('Password')" />
-            <x-text-input id="password" class="block mt-1 w-full" type="password" name="password" required autocomplete="new-password" />
-            <x-input-error :messages="$errors->get('password')" class="mt-2" />
-        </div>
+        @include('auth.partials.password-field', [
+            'id' => 'password',
+            'name' => 'password',
+            'label' => 'New password',
+            'autocomplete' => 'new-password',
+            'placeholder' => 'At least 6 characters',
+            'minlength' => 6,
+        ])
+        @error('password')
+            <div class="auth-alert auth-alert--error" role="alert" style="margin-top: -0.5rem; margin-bottom: 1rem;">{{ $message }}</div>
+        @enderror
 
-        <!-- Confirm Password -->
-        <div class="mt-4">
-            <x-input-label for="password_confirmation" :value="__('Confirm Password')" />
+        @include('auth.partials.password-field', [
+            'id' => 'password_confirmation',
+            'name' => 'password_confirmation',
+            'label' => 'Confirm password',
+            'autocomplete' => 'new-password',
+            'minlength' => 6,
+        ])
 
-            <x-text-input id="password_confirmation" class="block mt-1 w-full"
-                                type="password"
-                                name="password_confirmation" required autocomplete="new-password" />
+        @error('email')
+            <div class="auth-alert auth-alert--error" role="alert">{{ $message }}</div>
+        @enderror
 
-            <x-input-error :messages="$errors->get('password_confirmation')" class="mt-2" />
-        </div>
-
-        <div class="flex items-center justify-end mt-4">
-            <x-primary-button>
-                {{ __('Reset Password') }}
-            </x-primary-button>
-        </div>
+        <button type="submit" class="auth-btn auth-btn--primary">Update password</button>
     </form>
-</x-guest-layout>
+@endsection

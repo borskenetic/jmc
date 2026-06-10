@@ -67,7 +67,7 @@
                                    placeholder="Full program title" required maxlength="255">
                         </div>
                         <div class="col-md-2">
-                            <button type="submit" class="btn btn-primary btn-sm w-100 btn-search-filter">Add</button>
+                            <button type="submit" class="btn btn-primary w-100 ss-program-add-btn">Add program</button>
                         </div>
                     </form>
                 </div>
@@ -75,25 +75,25 @@
 
             @forelse($programs as $program)
                 <div class="card shadow-sm mb-3" id="program-card-{{ $program->id }}">
-                    <div class="card-header d-flex flex-wrap justify-content-between align-items-center gap-2 py-2">
-                        <span class="fw-semibold" id="program-name-{{ $program->id }}">
+                    <div class="card-header program-card-header d-flex flex-wrap justify-content-between align-items-center gap-2 py-2">
+                        <span class="fw-semibold program-card-title" id="program-name-{{ $program->id }}">
                             {{ $program->program_code }} — {{ $program->program_name }}
                         </span>
-                        <div class="d-flex gap-2">
-                            <button type="button" class="btn btn-sm btn-outline-warning"
+                        <div class="d-flex gap-2 program-card-actions">
+                            <button type="button" class="btn btn-sm btn-warning ss-toolbar-btn"
                                     data-action="edit-program"
                                     data-id="{{ $program->id }}"
                                     data-code="{{ $program->program_code }}"
                                     data-name="{{ $program->program_name }}">
                                 Edit
                             </button>
-                            <button type="button" class="btn btn-sm btn-outline-danger"
+                            <button type="button" class="btn btn-sm btn-danger ss-toolbar-btn"
                                     data-action="delete-program"
                                     data-id="{{ $program->id }}"
                                     data-code="{{ $program->program_code }}">
                                 Delete
                             </button>
-                            <button type="button" class="btn btn-sm btn-outline-secondary"
+                            <button type="button" class="btn btn-sm btn-light ss-toolbar-btn ss-courses-btn"
                                     data-bs-toggle="collapse" data-bs-target="#program-body-{{ $program->id }}">
                                 Courses
                             </button>
@@ -120,8 +120,8 @@
                                     <input type="text" name="course_name" class="form-control form-control-sm" required maxlength="255">
                                 </div>
                                 <div class="col-md-2">
-                                    <button type="submit" class="btn btn-success btn-sm w-100">
-                                        <span class="btn-text">Add</span>
+                                    <button type="submit" class="btn btn-success w-100 ss-course-add-btn">
+                                        <span class="btn-text">Add course</span>
                                         <span class="spinner-border spinner-border-sm d-none" role="status"></span>
                                     </button>
                                 </div>

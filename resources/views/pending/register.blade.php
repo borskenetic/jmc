@@ -1,43 +1,33 @@
 @extends('layouts.public')
 
-@section('title', 'Registration')
+@section('title', 'Online registration')
 
 @push('styles')
-    <style>
-        .reg-card { border-radius: 12px; max-width: 720px; margin: 0 auto; }
-        .reg-card h3 { font-size: 2rem; font-weight: 700; color: #000; }
-        .hidden { display: none; }
-        canvas {
-            touch-action: none;
-            border: 1px solid #ccc;
-            width: 100%;
-            max-width: 500px;
-            height: 150px;
-            border-radius: 6px;
-            background-color: #fff;
-        }
-        .reg-toggle .btn-outline-primary { color: #1f7a1f; border-color: #1f7a1f; font-weight: 600; }
-        .reg-toggle .btn-outline-primary.active,
-        .reg-toggle .btn-primary { background-color: #1f7a1f; border-color: #1f7a1f; }
-        .reg-submit-student { background-color: #1f7a1f; border-color: #1f7a1f; font-weight: 600; }
-        .reg-submit-employee { background-color: #1f7a1f; border-color: #1f7a1f; font-weight: 600; }
-    </style>
+    <link rel="stylesheet" href="{{ \App\Support\VersionedAsset::url('css/auth/register.css') }}">
 @endpush
 
 @section('content')
-    <div class="card shadow-sm reg-card">
-        <div class="card-body">
-            <h3 class="text-center mb-4">Registration</h3>
+<div class="reg-page">
+    <div class="reg-wrap">
+        <header class="reg-hero">
+            <img src="{{ asset('images/pantasLogo.png') }}" alt="{{ config('app.name') }}" class="reg-hero__logo">
+            <div>
+                <h1 class="reg-hero__title">Online registration</h1>
+                <p class="reg-hero__subtitle">Fill out the form below. Staff will review and approve your account.</p>
+            </div>
+        </header>
 
+        <div class="reg-sheet">
             @if(session('success'))
-                <div class="alert alert-success">{{ session('success') }}</div>
+                <div class="reg-notice reg-notice--success" role="status">{{ session('success') }}</div>
             @endif
             @if(session('error'))
-                <div class="alert alert-danger">{{ session('error') }}</div>
+                <div class="reg-notice reg-notice--error" role="alert">{{ session('error') }}</div>
             @endif
             @if($errors->any())
-                <div class="alert alert-danger">
-                    <ul class="mb-0 ps-3">
+                <div class="reg-notice reg-notice--error" role="alert">
+                    <strong>Please fix the following:</strong>
+                    <ul>
                         @foreach($errors->all() as $error)
                             <li>{{ $error }}</li>
                         @endforeach
@@ -45,182 +35,226 @@
                 </div>
             @endif
 
-            <div class="text-center mb-4 reg-toggle">
-                <button type="button" class="btn btn-primary me-2" id="btnStudent">Student</button>
-                <button type="button" class="btn btn-outline-primary" id="btnEmployee">Employee</button>
+            <div class="reg-tabs" role="tablist" aria-label="Registration type">
+                <button type="button" class="reg-tabs__btn is-active" id="btnStudent" role="tab" aria-selected="true">Student</button>
+                <button type="button" class="reg-tabs__btn" id="btnEmployee" role="tab" aria-selected="false">Employee</button>
             </div>
 
-            {{-- STUDENT FORM --}}
-            <form id="studentForm" method="POST" action="{{ route('pending.store') }}" enctype="multipart/form-data">
+            <form id="studentForm" class="reg-form" method="POST" action="{{ route('pending.store') }}" enctype="multipart/form-data">
                 @csrf
-                <h5 class="mb-3">Student Information</h5>
 
-                <div class="row g-3">
-                    <div class="col-md-6">
-                        <input type="text" name="firstname" class="form-control" placeholder="First Name" required>
-                    </div>
-                     <div class="col-md-6">
-                        <input type="text" name="middle_initial" class="form-control" placeholder="Middle Initial" >
-                    </div>
-                    <div class="col-md-6">
-                        <input type="text" name="lastname" class="form-control" placeholder="Last Name" required>
-                    </div>
-                    <div class="col-md-6">
-                        <input type="text" name="student_id" class="form-control" placeholder="Student ID" value="{{ old('student_id') }}">
-                        <small class="text-danger" hidden>
-                            Please leave it blank if you dont know your Student ID. Dont input N/A
-                        </small>
-                    </div>
-                    <div class="col-md-6">
-                        <input type="date" name="birth_date" class="form-control" required>
-                        <small class="text-danger" hidden>
-                            Please enter your <strong>actual birthdate</strong>. Do NOT use today’s date.
-                        </small>
-                    </div>
-                    <div class="col-md-6" hidden>
-                        <input type="text" name="blood_type" class="form-control" placeholder="Blood Type">
-                    </div>
-                    <div class="col-md-6">
-                        <input type="text" name="mobile_number" class="form-control" placeholder="Mobile Number" required>
-                    </div>
-                    @include('students.partials.educational-fields', [
-                        'programs' => $programs ?? collect(),
-                        'schoolSetup' => $schoolSetup ?? [],
-                        'educationalLevel' => old('educational_level'),
-                        'year' => old('year'),
-                        'course' => old('course'),
-                        'section' => old('section'),
-                        'sex' => old('sex'),
-                    ])
-
-                    <div class="col-md-6">
-                        <input type="text" name="emergency_person" class="form-control" placeholder="Emergency Contact Name" required>
-                    </div>
-                    <div class="col-md-6">
-                        <input type="text" name="emergency_relationship" class="form-control" placeholder="Relationship" required>
-                    </div>
-                    <div class="col-md-6">
-                        <input type="text" name="emergency_number" class="form-control" placeholder="Contact Number" required>
-                    </div>
-                    <div class="col-md-6">
-                        <input type="text" name="emergency_address" class="form-control" placeholder="Address">
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">Profile Picture</label>
-                        <div class="alert alert-warning py-2 mb-2" style="font-size: 14px;">
-                            Please upload a <strong>1x1 ID picture</strong> with a <strong>plain white background</strong>.
+                <div class="reg-block">
+                    <h2 class="reg-block__title">Personal information</h2>
+                    <div class="row g-3">
+                        <div class="col-md-4">
+                            <label class="form-label" for="student_firstname">First name</label>
+                            <input type="text" id="student_firstname" name="firstname" class="form-control" value="{{ old('firstname') }}" required>
                         </div>
-                        <input type="file" name="profile_picture" class="form-control" accept=".jpg,.jpeg,.png">
-                    </div>
-
-                    <div class="col-12">
-                        <label class="form-label">Signature (draw below)</label>
-                        <canvas id="studentSignaturePad"></canvas>
-                        <input type="hidden" name="student_signature" id="studentSignatureInput">
-                        <button type="button" id="clearStudentSignature" class="btn btn-sm btn-outline-danger mt-2">Clear</button>
+                        <div class="col-md-4">
+                            <label class="form-label" for="student_middle">Middle initial</label>
+                            <input type="text" id="student_middle" name="middle_initial" class="form-control" value="{{ old('middle_initial') }}">
+                        </div>
+                        <div class="col-md-4">
+                            <label class="form-label" for="student_lastname">Last name</label>
+                            <input type="text" id="student_lastname" name="lastname" class="form-control" value="{{ old('lastname') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="student_id">Student ID</label>
+                            <input type="text" id="student_id" name="student_id" class="form-control" value="{{ old('student_id') }}" placeholder="Leave blank if unknown">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="student_birth">Birth date</label>
+                            <input type="date" id="student_birth" name="birth_date" class="form-control" value="{{ old('birth_date') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="student_mobile">Mobile number</label>
+                            <input type="text" id="student_mobile" name="mobile_number" class="form-control" value="{{ old('mobile_number') }}" required>
+                        </div>
                     </div>
                 </div>
 
-                <div class="d-grid mt-4">
-                    <button type="submit" class="btn btn-primary reg-submit-student">Submit Student Registration</button>
+                <div class="reg-block">
+                    <h2 class="reg-block__title">School details</h2>
+                    <div class="row g-3">
+                        @include('students.partials.educational-fields', [
+                            'programs' => $programs ?? collect(),
+                            'schoolSetup' => $schoolSetup ?? [],
+                            'educationalLevel' => old('educational_level'),
+                            'year' => old('year'),
+                            'course' => old('course'),
+                            'section' => old('section'),
+                            'sex' => old('sex'),
+                        ])
+                    </div>
                 </div>
+
+                <div class="reg-block">
+                    <h2 class="reg-block__title">Emergency contact</h2>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="student_emergency_name">Contact name</label>
+                            <input type="text" id="student_emergency_name" name="emergency_person" class="form-control" value="{{ old('emergency_person') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="student_emergency_rel">Relationship</label>
+                            <input type="text" id="student_emergency_rel" name="emergency_relationship" class="form-control" value="{{ old('emergency_relationship') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="student_emergency_num">Contact number</label>
+                            <input type="text" id="student_emergency_num" name="emergency_number" class="form-control" value="{{ old('emergency_number') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="student_emergency_addr">Address</label>
+                            <input type="text" id="student_emergency_addr" name="emergency_address" class="form-control" value="{{ old('emergency_address') }}">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reg-block">
+                    <h2 class="reg-block__title">Photo &amp; signature</h2>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="student_photo">Profile picture</label>
+                            <div class="reg-notice reg-notice--warning" style="margin-bottom: 0.75rem;">
+                                Upload a <strong>1×1 ID photo</strong> with a <strong>plain white background</strong>.
+                            </div>
+                            <input type="file" id="student_photo" name="profile_picture" class="form-control" accept=".jpg,.jpeg,.png">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="studentSignaturePad">Signature</label>
+                            <div class="reg-signature-wrap">
+                                <canvas id="studentSignaturePad" aria-label="Draw your signature"></canvas>
+                            </div>
+                            <input type="hidden" name="student_signature" id="studentSignatureInput">
+                            <button type="button" id="clearStudentSignature" class="reg-btn-clear">Clear signature</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="reg-submit">Submit student registration</button>
             </form>
 
-            {{-- EMPLOYEE FORM --}}
-            <form id="employeeForm" method="POST" action="{{ route('pendingEmployee.store') }}" enctype="multipart/form-data" class="hidden">
+            <form id="employeeForm" class="reg-form hidden" method="POST" action="{{ route('pendingEmployee.store') }}" enctype="multipart/form-data">
                 @csrf
 
-                <h5 class="mb-3">Employee Information</h5>
-
-                <div class="row g-3">
-
-                    <div class="col-md-6">
-                        <input type="text" name="firstname" class="form-control" placeholder="First Name" required>
-                    </div>
-                    <div class="col-md-6">
-                        <input type="text" name="lastname" class="form-control" placeholder="Last Name" required>
-                    </div>
-                    <div class="col-md-6">
-                        <input type="text" name="department" class="form-control" placeholder="Department" required>
-                    </div>
-                    <div class="col-md-6">
-                        <input type="text" name="position" class="form-control" placeholder="Position" required>
-                    </div>
-                    <div class="col-md-6">
-                        <input type="text" name="employee_id" class="form-control" placeholder="Employee ID" required>
-                    </div>
-
-                    <div class="col-md-6">
-                        <input type="date" name="birth_date" class="form-control" required>
-                    </div>
-
-                    <div class="col-md-6">
-                        <select name="sex" class="form-select" required>
-                            <option value="">Select Sex</option>
-                            <option value="MALE">MALE</option>
-                            <option value="FEMALE">FEMALE</option>
-                            <option value="OTHER">OTHER</option>
-                        </select>
-                    </div>
-
-                    <div class="col-md-6">
-                        <input type="text" name="tin_id_number" class="form-control" placeholder="TIN ID Number">
-                    </div>
-                    <div class="col-md-6">
-                        <input type="text" name="philhealth_number" class="form-control" placeholder="PhilHealth Number">
-                    </div>
-                    <div class="col-md-6">
-                        <input type="text" name="sss_number" class="form-control" placeholder="SSS Number">
-                    </div>
-                    <div class="col-md-6">
-                        <input type="text" name="hdmf_number" class="form-control" placeholder="HDMF Number">
-                    </div>
-                    <div class="col-md-6">
-                        <input type="text" name="blood_type" class="form-control" placeholder="Blood Type">
-                    </div>
-                    <div class="col-md-6">
-                        <input type="text" name="civil_status" class="form-control" placeholder="Civil Status">
-                    </div>
-
-                    <div class="col-md-6">
-                        <input type="text" name="emergency_contact_name" class="form-control" placeholder="Emergency Contact Name" required>
-                    </div>
-                    <div class="col-md-6">
-                        <input type="text" name="emergency_contact_relationship" class="form-control" placeholder="Relationship" required>
-                    </div>
-                    <div class="col-md-6">
-                        <input type="text" name="emergency_contact_number" class="form-control" placeholder="Contact Number" required>
-                    </div>
-
-                    <div class="col-md-6">
-                        <label class="form-label">Formal Picture</label>
-                        <input type="file" name="formal_picture" class="form-control" accept=".jpg,.jpeg,.png">
-                    </div>
-
-                    <div class="col-md-12">
-                        <label class="form-label">Address</label>
-                        <textarea name="address" class="form-control" rows="2" placeholder="Home Address"></textarea>
-                    </div>
-
-                    <div class="col-12">
-                        <label class="form-label">Signature (draw below)</label>
-                        <canvas id="employeeSignaturePad"></canvas>
-                        <input type="hidden" name="employee_signature" id="employeeSignatureInput">
-                        <button type="button" id="clearEmployeeSignature" class="btn btn-sm btn-outline-danger mt-2">Clear</button>
+                <div class="reg-block">
+                    <h2 class="reg-block__title">Personal information</h2>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="emp_firstname">First name</label>
+                            <input type="text" id="emp_firstname" name="firstname" class="form-control" value="{{ old('firstname') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="emp_lastname">Last name</label>
+                            <input type="text" id="emp_lastname" name="lastname" class="form-control" value="{{ old('lastname') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="emp_department">Department</label>
+                            <input type="text" id="emp_department" name="department" class="form-control" value="{{ old('department') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="emp_position">Position</label>
+                            <input type="text" id="emp_position" name="position" class="form-control" value="{{ old('position') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="emp_id">Employee ID</label>
+                            <input type="text" id="emp_id" name="employee_id" class="form-control" value="{{ old('employee_id') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="emp_birth">Birth date</label>
+                            <input type="date" id="emp_birth" name="birth_date" class="form-control" value="{{ old('birth_date') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="emp_sex">Sex</label>
+                            <select id="emp_sex" name="sex" class="form-select" required>
+                                <option value="">Select…</option>
+                                <option value="MALE" @selected(old('sex') === 'MALE')>Male</option>
+                                <option value="FEMALE" @selected(old('sex') === 'FEMALE')>Female</option>
+                                <option value="OTHER" @selected(old('sex') === 'OTHER')>Other</option>
+                            </select>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="emp_blood">Blood type</label>
+                            <input type="text" id="emp_blood" name="blood_type" class="form-control" value="{{ old('blood_type') }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="emp_civil">Civil status</label>
+                            <input type="text" id="emp_civil" name="civil_status" class="form-control" value="{{ old('civil_status') }}">
+                        </div>
                     </div>
                 </div>
 
-                <div class="d-grid mt-4">
-                    <button type="submit" class="btn btn-primary reg-submit-employee">Submit Employee Registration</button>
+                <div class="reg-block">
+                    <h2 class="reg-block__title">Government IDs</h2>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="emp_tin">TIN</label>
+                            <input type="text" id="emp_tin" name="tin_id_number" class="form-control" value="{{ old('tin_id_number') }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="emp_philhealth">PhilHealth</label>
+                            <input type="text" id="emp_philhealth" name="philhealth_number" class="form-control" value="{{ old('philhealth_number') }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="emp_sss">SSS</label>
+                            <input type="text" id="emp_sss" name="sss_number" class="form-control" value="{{ old('sss_number') }}">
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="emp_hdmf">HDMF</label>
+                            <input type="text" id="emp_hdmf" name="hdmf_number" class="form-control" value="{{ old('hdmf_number') }}">
+                        </div>
+                    </div>
                 </div>
+
+                <div class="reg-block">
+                    <h2 class="reg-block__title">Emergency contact</h2>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="emp_emergency_name">Contact name</label>
+                            <input type="text" id="emp_emergency_name" name="emergency_contact_name" class="form-control" value="{{ old('emergency_contact_name') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="emp_emergency_rel">Relationship</label>
+                            <input type="text" id="emp_emergency_rel" name="emergency_contact_relationship" class="form-control" value="{{ old('emergency_contact_relationship') }}" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label class="form-label" for="emp_emergency_num">Contact number</label>
+                            <input type="text" id="emp_emergency_num" name="emergency_contact_number" class="form-control" value="{{ old('emergency_contact_number') }}" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="emp_address">Home address</label>
+                            <textarea id="emp_address" name="address" class="form-control" rows="2">{{ old('address') }}</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="reg-block">
+                    <h2 class="reg-block__title">Photo &amp; signature</h2>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label class="form-label" for="emp_photo">Formal picture</label>
+                            <input type="file" id="emp_photo" name="formal_picture" class="form-control" accept=".jpg,.jpeg,.png">
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label" for="employeeSignaturePad">Signature</label>
+                            <div class="reg-signature-wrap">
+                                <canvas id="employeeSignaturePad" aria-label="Draw your signature"></canvas>
+                            </div>
+                            <input type="hidden" name="employee_signature" id="employeeSignatureInput">
+                            <button type="button" id="clearEmployeeSignature" class="reg-btn-clear">Clear signature</button>
+                        </div>
+                    </div>
+                </div>
+
+                <button type="submit" class="reg-submit">Submit employee registration</button>
             </form>
-
         </div>
     </div>
+</div>
+@endsection
 
+@section('scripts')
 <script>
-/* SIGNATURE PAD FUNCTION */
 function setupSignaturePad(canvasId, inputId, clearBtnId) {
     const canvas = document.getElementById(canvasId);
     const ctx = canvas.getContext('2d');
@@ -238,7 +272,6 @@ function setupSignaturePad(canvasId, inputId, clearBtnId) {
 
     resizeCanvas();
     window.addEventListener('resize', resizeCanvas);
-
     canvas.style.touchAction = 'none';
 
     function getPos(e) {
@@ -256,8 +289,7 @@ function setupSignaturePad(canvasId, inputId, clearBtnId) {
     function startDrawing(e) {
         e.preventDefault();
         drawing = true;
-        points = [];
-        points.push(getPos(e));
+        points = [getPos(e)];
     }
 
     function draw(e) {
@@ -266,9 +298,8 @@ function setupSignaturePad(canvasId, inputId, clearBtnId) {
 
         const pos = getPos(e);
         points.push(pos);
-
         ctx.lineCap = 'round';
-        ctx.strokeStyle = '#000';
+        ctx.strokeStyle = '#0f172a';
 
         if (points.length === 1) {
             ctx.beginPath();
@@ -277,17 +308,14 @@ function setupSignaturePad(canvasId, inputId, clearBtnId) {
             return;
         }
 
-        ctx.beginPath();
-
         const last = points[points.length - 2];
         const dx = pos.x - last.x;
         const dy = pos.y - last.y;
-        const speed = Math.sqrt(dx*dx + dy*dy);
-
+        const speed = Math.sqrt(dx * dx + dy * dy);
         ctx.lineWidth = Math.max(1, 4 - speed / 2);
+        ctx.beginPath();
         ctx.moveTo(last.x, last.y);
         ctx.lineTo(pos.x, pos.y);
-
         ctx.stroke();
     }
 
@@ -301,7 +329,6 @@ function setupSignaturePad(canvasId, inputId, clearBtnId) {
     canvas.addEventListener('mousemove', draw);
     canvas.addEventListener('mouseup', stopDrawing);
     canvas.addEventListener('mouseleave', stopDrawing);
-
     canvas.addEventListener('touchstart', startDrawing);
     canvas.addEventListener('touchmove', draw);
     canvas.addEventListener('touchend', stopDrawing);
@@ -318,24 +345,32 @@ function setupSignaturePad(canvasId, inputId, clearBtnId) {
 const studentPad = setupSignaturePad('studentSignaturePad', 'studentSignatureInput', 'clearStudentSignature');
 const employeePad = setupSignaturePad('employeeSignaturePad', 'employeeSignatureInput', 'clearEmployeeSignature');
 
-/* FORM TOGGLE */
 const btnStudent = document.getElementById('btnStudent');
 const btnEmployee = document.getElementById('btnEmployee');
+const studentForm = document.getElementById('studentForm');
+const employeeForm = document.getElementById('employeeForm');
 
-btnStudent.addEventListener('click', () => {
-    document.getElementById('studentForm').classList.remove('hidden');
-    document.getElementById('employeeForm').classList.add('hidden');
-    btnStudent.className = 'btn btn-primary me-2';
-    btnEmployee.className = 'btn btn-outline-primary';
+function showStudent() {
+    studentForm.classList.remove('hidden');
+    employeeForm.classList.add('hidden');
+    btnStudent.classList.add('is-active');
+    btnEmployee.classList.remove('is-active');
+    btnStudent.setAttribute('aria-selected', 'true');
+    btnEmployee.setAttribute('aria-selected', 'false');
     setTimeout(() => studentPad.resize(), 50);
-});
+}
 
-btnEmployee.addEventListener('click', () => {
-    document.getElementById('employeeForm').classList.remove('hidden');
-    document.getElementById('studentForm').classList.add('hidden');
-    btnEmployee.className = 'btn btn-primary me-2';
-    btnStudent.className = 'btn btn-outline-primary';
+function showEmployee() {
+    employeeForm.classList.remove('hidden');
+    studentForm.classList.add('hidden');
+    btnEmployee.classList.add('is-active');
+    btnStudent.classList.remove('is-active');
+    btnEmployee.setAttribute('aria-selected', 'true');
+    btnStudent.setAttribute('aria-selected', 'false');
     setTimeout(() => employeePad.resize(), 50);
-});
+}
+
+btnStudent.addEventListener('click', showStudent);
+btnEmployee.addEventListener('click', showEmployee);
 </script>
 @endsection

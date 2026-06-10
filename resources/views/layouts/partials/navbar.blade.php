@@ -29,8 +29,12 @@
                         @endif
                         <a href="{{ route('attendance_logs.index') }}" class="{{ $linkActive(['attendance_logs.index']) }}">Attendance Logs</a>
                         <a href="{{ route('attendance.changeVideo') }}" class="{{ $linkActive(['attendance.changeVideo', 'attendance.uploadVideo']) }}">Manage Video</a>
-                        <a href="{{ route('attendance.section.settings') }}" class="{{ $linkActive(['attendance.section.settings*']) }}">Section Picker</a>
-                        <a href="{{ route('attendance.feedback.settings') }}" class="{{ $linkActive(['attendance.feedback.settings*']) }}">Logout Feedback</a>
+                        @if(config('attendance.section_picker_enabled'))
+                            <a href="{{ route('attendance.section.settings') }}" class="{{ $linkActive(['attendance.section.settings*']) }}">Section Picker</a>
+                        @endif
+                        @if(config('attendance.logout_feedback_enabled'))
+                            <a href="{{ route('attendance.feedback.settings') }}" class="{{ $linkActive(['attendance.feedback.settings*']) }}">Logout Feedback</a>
+                        @endif
                     </div>
                 </div>
 
