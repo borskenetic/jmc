@@ -10,7 +10,7 @@
 <div class="mb-3">
     <a href="{{ route('sf2.index') }}" class="text-decoration-none small">&larr; Back to SF2 list</a>
     <h4 class="mt-2 mb-1">Create SF2 report</h4>
-    <p class="text-muted small">Enter school details and learner names, then absent/tardy dates. Download the DepEd-style PDF when done.</p>
+    <p class="text-muted small">Choose grade and section, load learners from attendance logs, review marks, then save and export the DepEd Excel.</p>
 </div>
 
 @if($errors->any())
@@ -32,6 +32,7 @@
         <div class="card-header fw-semibold d-flex flex-wrap justify-content-between align-items-center gap-2">
             <span>Learners</span>
             <div class="d-flex flex-wrap gap-2 align-items-center">
+                <button type="button" id="sf2-load-from-logs" class="btn btn-sm btn-success">Load from attendance logs</button>
                 <input type="number" id="sf2-student-count" class="form-control form-control-sm" style="width:5rem" min="1" max="80" placeholder="#">
                 <button type="button" id="sf2-generate-rows" class="btn btn-sm btn-outline-primary">Generate rows</button>
                 <button type="button" id="sf2-add-student" class="btn btn-sm btn-primary">Add learner</button>
@@ -60,6 +61,10 @@
 @endsection
 
 @push('scripts')
+<script>
+    window.SF2_SECTIONS_BY_GRADE = @json($rosterData['sections_by_grade'] ?? []);
+    window.SF2_PREVIEW_URL = @json(route('sf2.preview'));
+</script>
 <script src="{{ \App\Support\VersionedAsset::url('js/sf2-calendar.js') }}"></script>
 <script src="{{ \App\Support\VersionedAsset::url('js/sf2-form.js') }}"></script>
 @endpush

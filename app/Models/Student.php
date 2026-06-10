@@ -15,8 +15,12 @@ class Student extends Model
         'course',
         'mobile_number',
         'year',
+        'section',
+        'sex',
         'educational_level',
         'profile_picture',
+        'face_descriptor',
+        'face_enrolled_at',
         'qrcode',
         'birth_date',
         'blood_type',
@@ -35,6 +39,8 @@ class Student extends Model
     {
         return [
             'educational_level' => EducationalLevel::class,
+            'face_descriptor' => 'array',
+            'face_enrolled_at' => 'datetime',
         ];
     }
 
@@ -56,5 +62,10 @@ class Student extends Model
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    public function hasFaceEnrolled(): bool
+    {
+        return is_array($this->face_descriptor) && count($this->face_descriptor) === (int) config('face.descriptor_length', 128);
     }
 }

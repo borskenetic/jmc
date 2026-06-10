@@ -84,10 +84,13 @@
                         <input type="text" name="mobile_number" class="form-control" placeholder="Mobile Number" required>
                     </div>
                     @include('students.partials.educational-fields', [
-                        'programs' => collect(),
+                        'programs' => $programs ?? collect(),
+                        'schoolSetup' => $schoolSetup ?? [],
                         'educationalLevel' => old('educational_level'),
                         'year' => old('year'),
                         'course' => old('course'),
+                        'section' => old('section'),
+                        'sex' => old('sex'),
                     ])
 
                     <div class="col-md-6">

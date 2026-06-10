@@ -40,7 +40,7 @@
         </div>
         <div class="col-md-4">
             <label class="form-label">Grade level <span class="text-danger">*</span></label>
-            <select name="grade_level" class="form-select" required>
+            <select name="grade_level" id="sf2-grade-select" class="form-select" required>
                 <option value="">— Select —</option>
                 @foreach($gradeLevels as $grade)
                     <option value="{{ $grade }}" @selected(old('grade_level', $report->grade_level ?? '') === $grade)>{{ $grade }}</option>
@@ -49,8 +49,17 @@
         </div>
         <div class="col-md-4">
             <label class="form-label">Section <span class="text-danger">*</span></label>
-            <input type="text" name="section" class="form-control" required maxlength="64"
-                   value="{{ old('section', $report->section ?? '') }}" placeholder="e.g. St. Francis">
+            @if($report)
+                <input type="text" name="section" class="form-control" required maxlength="64"
+                       value="{{ old('section', $report->section ?? '') }}" placeholder="e.g. St. Francis">
+            @else
+                <select name="section" id="sf2-section-select" class="form-select" required>
+                    <option value="">— Select grade first —</option>
+                    @if(old('section') && old('grade_level'))
+                        <option value="{{ old('section') }}" selected>{{ old('section') }}</option>
+                    @endif
+                </select>
+            @endif
         </div>
         <div class="col-md-4">
             <label class="form-label">Teacher (printed name)</label>
@@ -64,7 +73,14 @@
         </div>
         <div class="col-12">
             <p class="small text-muted mb-0">
-                School days are weekdays (Mon–Fri) in the selected month. For each learner, use the <strong>calendar</strong> to click absent or tardy days; unmarked weekdays count as present.
+                School days are weekdays (Mon–Fri) in the selected month.
+                @unless($report)
+                    Use <strong>Load from attendance logs</strong> to fill the roster and marks from school-wide IN scans
+                    (present = scanned IN; absent = no IN; tardy = first IN after {{ config('sf2.class_start_time', '07:30') }} + {{ config('sf2.tardy_grace_minutes', 15) }} min).
+                    You can still adjust any day on the calendar before saving.
+                @else
+                    For each learner, use the <strong>calendar</strong> to click absent or tardy days; unmarked weekdays count as present.
+                @endunless
             </p>
         </div>
     </div>

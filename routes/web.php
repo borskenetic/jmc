@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AttendanceController;
+use App\Http\Controllers\FaceEnrollmentController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\AttendanceLogController;
 use App\Http\Controllers\AuthController;
@@ -13,7 +14,7 @@ use App\Http\Controllers\PendingEmployeeController;
 use App\Http\Controllers\PendingStudentController;
 use App\Http\Controllers\SmsController;
 use App\Http\Controllers\StudentController;
-use App\Http\Controllers\ProspectusController;
+use App\Http\Controllers\SchoolSetupController;
 use App\Http\Controllers\Sf2ReportController;
 use App\Http\Controllers\UserController;
 use Illuminate\Support\Facades\Route;
@@ -32,7 +33,9 @@ Route::get('/index', fn () => redirect()->route('home'));
 
 // Attendance kiosk (public)
 Route::get('/attendance', [AttendanceController::class, 'showScanner'])->name('attendance.scan');
+Route::get('/attendance/face', [AttendanceController::class, 'showFaceScanner'])->name('attendance.face');
 Route::post('/attendance', [AttendanceController::class, 'scan'])->name('attendance.process');
+Route::post('/attendance/face', [AttendanceController::class, 'identifyByFace'])->name('attendance.face.identify');
 Route::post('/attendance/section', [AttendanceController::class, 'processSection'])->name('attendance.section');
 Route::post('/attendance-feedback', [FeedController::class, 'store'])->name('attendance.feedback.store');
 
@@ -92,6 +95,7 @@ Route::middleware(['auth', 'can:isAdminOrStaff'])->group(function () {
     Route::prefix('sf2')->name('sf2.')->group(function () {
         Route::get('/', [Sf2ReportController::class, 'index'])->name('index');
         Route::get('/create', [Sf2ReportController::class, 'create'])->name('create');
+        Route::get('/preview-from-logs', [Sf2ReportController::class, 'previewFromLogs'])->name('preview');
         Route::post('/', [Sf2ReportController::class, 'store'])->name('store');
         Route::get('/{sf2}', [Sf2ReportController::class, 'show'])->name('show');
         Route::get('/{sf2}/edit', [Sf2ReportController::class, 'edit'])->name('edit');
@@ -117,6 +121,8 @@ Route::middleware(['auth', 'can:isAdmin'])->group(function () {
     Route::post('/employees/import', [EmployeeController::class, 'import'])->name('employees.import');
     Route::get('/students/{id}/edit', [StudentController::class, 'edit'])->name('students.edit');
     Route::put('/students/{id}', [StudentController::class, 'update'])->name('students.update');
+    Route::post('/students/{student}/face', [FaceEnrollmentController::class, 'store'])->name('students.face.store');
+    Route::delete('/students/{student}/face', [FaceEnrollmentController::class, 'destroy'])->name('students.face.destroy');
     Route::delete('/students/{id}', [StudentController::class, 'destroy'])->name('students.destroy');
 
     Route::get('/idcard/download/{id}', [IdCardController::class, 'download'])->name('idcard.download');
@@ -129,16 +135,21 @@ Route::middleware(['auth', 'can:isAdmin'])->group(function () {
     Route::get('/files/download/{id}', [FileController::class, 'download'])->name('files.download');
     Route::delete('/files/delete/{id}', [FileController::class, 'delete'])->name('files.delete');
 
-    Route::prefix('prospectus')->name('prospectus.')->group(function () {
-        Route::get('/', [ProspectusController::class, 'index'])->name('index');
-        Route::post('/store-program', [ProspectusController::class, 'storeProgram'])->name('storeProgram');
-        Route::get('/{program}/years', [ProspectusController::class, 'getProgramYears'])->name('getProgramYears');
+    Route::redirect('/prospectus', '/school-setup')->name('prospectus.index');
+
+    Route::prefix('school-setup')->name('school-setup.')->group(function () {
+        Route::get('/', [SchoolSetupController::class, 'index'])->name('index');
+        Route::post('/programs', [SchoolSetupController::class, 'storeProgram'])->name('programs.store');
+        Route::put('/programs/{program}', [SchoolSetupController::class, 'updateProgram'])->name('programs.update');
+        Route::delete('/programs/{program}', [SchoolSetupController::class, 'destroyProgram'])->name('programs.destroy');
+        Route::post('/programs/{program}/courses', [SchoolSetupController::class, 'storeCourse'])->name('courses.store');
+        Route::put('/courses/{course}', [SchoolSetupController::class, 'updateCourse'])->name('courses.update');
+        Route::delete('/courses/{course}', [SchoolSetupController::class, 'destroyCourse'])->name('courses.destroy');
+        Route::post('/sections', [SchoolSetupController::class, 'storeGradeSection'])->name('sections.store');
+        Route::delete('/sections/{gradeSection}', [SchoolSetupController::class, 'destroyGradeSection'])->name('sections.destroy');
+        Route::post('/strands', [SchoolSetupController::class, 'storeStrand'])->name('strands.store');
+        Route::delete('/strands/{schoolStrand}', [SchoolSetupController::class, 'destroyStrand'])->name('strands.destroy');
     });
-    Route::post('/prospectus/{year}/course', [ProspectusController::class, 'storeCourse'])->name('prospectus.storeCourse');
-    Route::put('/prospectus/course/{course}', [ProspectusController::class, 'updateCourse'])->name('prospectus.updateCourse');
-    Route::delete('/prospectus/course/{course}', [ProspectusController::class, 'destroyCourse'])->name('prospectus.destroyCourse');
-    Route::put('/prospectus/program/{program}', [ProspectusController::class, 'updateProgram'])->name('prospectus.updateProgram');
-    Route::delete('/prospectus/program/{program}', [ProspectusController::class, 'destroyProgram'])->name('prospectus.destroyProgram');
 
     Route::get('/view-users', [UserController::class, 'index'])->name('users.index');
     Route::get('/create-user', [UserController::class, 'create'])->name('users.create');

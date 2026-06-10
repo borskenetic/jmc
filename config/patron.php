@@ -5,6 +5,17 @@ return [
     /*
     | Year level options keyed by educational_level (see App\Enums\EducationalLevel).
     */
+    'senior_high_grades' => ['Grade 11', 'Grade 12'],
+
+    'shs_strands' => [
+        'STEM',
+        'ABM',
+        'HUMSS',
+        'GAS',
+        'TVL - ICT',
+        'TVL - HE',
+    ],
+
     'year_options' => [
         'grade_school' => [
             'Kinder 1', 'Kinder 2',

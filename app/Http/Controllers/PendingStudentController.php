@@ -7,6 +7,7 @@ use App\Models\PendingStudent;
 use App\Models\PendingEmployee;
 use App\Models\Role;
 use App\Support\PatronOptions;
+use App\Support\SchoolSetupOptions;
 use App\Support\TableColumns;
 use Illuminate\Support\Str;
 use Illuminate\Validation\Rule;
@@ -49,7 +50,10 @@ class PendingStudentController extends Controller
     public function create()
     {
         $roles = Role::all();
-        return view('pending.register', compact('roles'));
+        $programs = SchoolSetupOptions::programsForForms();
+        $schoolSetup = SchoolSetupOptions::registrationData();
+
+        return view('pending.register', compact('roles', 'programs', 'schoolSetup'));
     }
 
     public function store(Request $request)
@@ -62,13 +66,15 @@ class PendingStudentController extends Controller
             'student_id' => 'nullable|string|max:255',
             'mobile_number' => 'nullable|string|max:255',
             'educational_level' => PatronOptions::educationalLevelRule(),
-            'course' => 'required_if:educational_level,college|nullable|string|max:255',
+            'course' => 'required_if:educational_level,college|required_if:educational_level,high_school_senior|nullable|string|max:255',
             'year' => [
                 'required',
                 'string',
                 'max:255',
                 Rule::in(PatronOptions::yearOptionsFor($request->input('educational_level'))),
             ],
+            'section' => 'nullable|string|max:64',
+            'sex' => 'nullable|in:male,female',
             'birth_date' => 'nullable|date',
             'blood_type' => 'nullable|string|max:5',
             'emergency_person' => 'nullable|string|max:255',

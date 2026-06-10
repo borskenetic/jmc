@@ -46,6 +46,10 @@
                 </div>
             @endif
 
+            @if(config('face.enabled'))
+                @include('students.partials.face-enroll', ['student' => $student])
+            @endif
+
             <form id="studentForm" method="POST" action="{{ route('students.update', $student->id) }}" enctype="multipart/form-data">
                 @csrf
                 @method('PUT')
@@ -87,9 +91,12 @@
                         </div>
                         @include('students.partials.educational-fields', [
                             'programs' => $programs,
+                            'schoolSetup' => $schoolSetup ?? [],
                             'educationalLevel' => $levelValue,
                             'year' => old('year', $student->year),
                             'course' => old('course', $student->course),
+                            'section' => old('section', $student->section),
+                            'sex' => old('sex', $student->sex),
                         ])
                         <div class="col-md-6">
                             <label for="birth_date" class="form-label">Birthday</label>

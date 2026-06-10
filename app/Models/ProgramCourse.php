@@ -7,7 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 class ProgramCourse extends Model
 {
     protected $fillable = [
-        'program_year_id', 'course_code', 'course_name'
+        'program_id',
+        'program_year_id',
+        'course_code',
+        'course_name',
     ];
 
     public function year()
@@ -17,14 +20,7 @@ class ProgramCourse extends Model
 
     public function program()
     {
-        return $this->hasOneThrough(
-            Program::class,
-            ProgramYear::class,
-            'id',           // ProgramYear PK
-            'id',           // Program PK
-            'program_year_id', // FK on ProgramCourse
-            'program_id'    // FK on ProgramYear
-        );
+        return $this->belongsTo(Program::class);
     }
 
     public function ebooks()

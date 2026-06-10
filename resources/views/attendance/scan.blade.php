@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>{{ config('app.name') }} — Attendance</title>
+  <title>{{ config('app.name') }} — Attendance Scanner</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="{{ \App\Support\Branding::stylesheetUrl() }}">
   <link rel="stylesheet" href="{{ \App\Support\VersionedAsset::url('css/attendance/scan.css') }}">
@@ -15,6 +15,9 @@
       <img src="{{ asset('images/pantasLogo.png') }}" alt="Logo">
       <div class="system-title">Powered by Pantas</div>
     </div>
+    @if(config('face.enabled'))
+      <a href="{{ route('attendance.face') }}" class="small text-white text-decoration-none ms-3">Face scanner</a>
+    @endif
   </div>
 </header>
 

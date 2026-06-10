@@ -3,6 +3,10 @@
   const template = document.getElementById('sf2-student-row-template');
   const countInput = document.getElementById('sf2-student-count');
   const generateBtn = document.getElementById('sf2-generate-rows');
+  const gradeSelect = document.getElementById('sf2-grade-select');
+  const sectionSelect = document.getElementById('sf2-section-select');
+  const loadLogsBtn = document.getElementById('sf2-load-from-logs');
+  const sectionsByGrade = window.SF2_SECTIONS_BY_GRADE || {};
 
   if (!container || !template) {
     return;
@@ -30,6 +34,11 @@
       }
     });
 
+    const sexSelect = row.querySelector('select[name$="[sex]"]');
+    if (sexSelect && data && data.sex) {
+      sexSelect.value = data.sex;
+    }
+
     const cal = row.querySelector('.sf2-attendance-cal');
     if (cal && data) {
       if (data.absent_dates) {
@@ -50,6 +59,114 @@
     container.appendChild(clone);
     mountCalendar(row);
     rowIndex++;
+  }
+
+  function replaceAllStudents(rows) {
+    container.innerHTML = '';
+    rowIndex = 0;
+
+    if (!rows || rows.length === 0) {
+      addRow({ sex: 'male' });
+      return;
+    }
+
+    rows.forEach((row) => addRow(row));
+  }
+
+  function populateSectionOptions(grade, selected) {
+    if (!sectionSelect) {
+      return;
+    }
+
+    const sections = sectionsByGrade[grade] || [];
+    const current = selected || sectionSelect.value;
+
+    sectionSelect.innerHTML = '';
+
+    const placeholder = document.createElement('option');
+    placeholder.value = '';
+    placeholder.textContent = sections.length ? '— Select section —' : '— No sections for this grade —';
+    sectionSelect.appendChild(placeholder);
+
+    let found = false;
+    sections.forEach((name) => {
+      const opt = document.createElement('option');
+      opt.value = name;
+      opt.textContent = name;
+      if (current && current === name) {
+        opt.selected = true;
+        found = true;
+      }
+      sectionSelect.appendChild(opt);
+    });
+
+    if (current && !found) {
+      const extra = document.createElement('option');
+      extra.value = current;
+      extra.textContent = current + ' (current)';
+      extra.selected = true;
+      sectionSelect.appendChild(extra);
+    }
+  }
+
+  if (gradeSelect && sectionSelect) {
+    gradeSelect.addEventListener('change', function () {
+      populateSectionOptions(this.value, '');
+    });
+
+    populateSectionOptions(gradeSelect.value, sectionSelect.value);
+  }
+
+  if (loadLogsBtn) {
+    loadLogsBtn.addEventListener('click', async function () {
+      const grade = gradeSelect?.value || document.querySelector('[name="grade_level"]')?.value;
+      const section = sectionSelect?.value || document.querySelector('[name="section"]')?.value;
+      const month = document.querySelector('[name="report_month"]')?.value;
+      const year = document.querySelector('[name="report_year"]')?.value;
+
+      if (!grade || !section || !month || !year) {
+        alert('Select grade level, section, report month, and year first.');
+        return;
+      }
+
+      const url = new URL(window.SF2_PREVIEW_URL, window.location.origin);
+      url.searchParams.set('grade_level', grade);
+      url.searchParams.set('section', section);
+      url.searchParams.set('report_month', month);
+      url.searchParams.set('report_year', year);
+
+      loadLogsBtn.disabled = true;
+      loadLogsBtn.textContent = 'Loading…';
+
+      try {
+        const response = await fetch(url.toString(), {
+          headers: { Accept: 'application/json' },
+          credentials: 'same-origin',
+        });
+
+        if (!response.ok) {
+          throw new Error('Could not load attendance data.');
+        }
+
+        const data = await response.json();
+
+        if (data.warnings && data.warnings.length) {
+          alert(data.warnings.join('\n'));
+        }
+
+        if (!data.students || data.students.length === 0) {
+          alert('No learners loaded. Check that students have grade, section, and sex set.');
+          return;
+        }
+
+        replaceAllStudents(data.students);
+      } catch (err) {
+        alert(err.message || 'Failed to load from attendance logs.');
+      } finally {
+        loadLogsBtn.disabled = false;
+        loadLogsBtn.textContent = 'Load from attendance logs';
+      }
+    });
   }
 
   if (generateBtn && countInput) {
@@ -81,4 +198,9 @@
       row.remove();
     }
   });
+
+  window.Sf2Form = {
+    addRow,
+    replaceAllStudents,
+  };
 })();

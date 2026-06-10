@@ -18,12 +18,15 @@
         @auth
             @can('isAdminOrStaff')
                 <div class="nav-dropdown">
-                    <button type="button" class="nav-dropdown-button {{ $dropActive(['attendance.scan', 'attendance.process', 'attendance.section', 'attendance_logs.index', 'attendance.changeVideo', 'attendance.uploadVideo', 'attendance.feedback.settings*', 'attendance.section.settings*', 'sf2.*']) }}">
+                    <button type="button" class="nav-dropdown-button {{ $dropActive(['attendance.scan', 'attendance.face', 'attendance.process', 'attendance.section', 'attendance_logs.index', 'attendance.changeVideo', 'attendance.uploadVideo', 'attendance.feedback.settings*', 'attendance.section.settings*', 'sf2.*', 'school-setup.*', 'prospectus.*']) }}">
                         Attendance
                     </button>
                     <div class="nav-dropdown-content">
                         <a href="{{ route('sf2.index') }}" class="{{ $linkActive(['sf2.*']) }}">School Form 2 (SF2)</a>
                         <a href="{{ route('attendance.scan') }}" target="_blank" rel="noopener" class="{{ $linkActive(['attendance.scan']) }}">Attendance Scanner</a>
+                        @if(config('face.enabled'))
+                            <a href="{{ route('attendance.face') }}" target="_blank" rel="noopener" class="{{ $linkActive(['attendance.face']) }}">Face Scanner</a>
+                        @endif
                         <a href="{{ route('attendance_logs.index') }}" class="{{ $linkActive(['attendance_logs.index']) }}">Attendance Logs</a>
                         <a href="{{ route('attendance.changeVideo') }}" class="{{ $linkActive(['attendance.changeVideo', 'attendance.uploadVideo']) }}">Manage Video</a>
                         <a href="{{ route('attendance.section.settings') }}" class="{{ $linkActive(['attendance.section.settings*']) }}">Section Picker</a>
@@ -54,11 +57,11 @@
 
                 @can('isAdmin')
                     <div class="nav-dropdown">
-                        <button type="button" class="nav-dropdown-button {{ $dropActive(['users.*', 'prospectus.*']) }}">
+                        <button type="button" class="nav-dropdown-button {{ $dropActive(['users.*', 'school-setup.*', 'prospectus.*']) }}">
                             Admin
                         </button>
                         <div class="nav-dropdown-content">
-                            <a href="{{ route('prospectus.index') }}" class="{{ $linkActive(['prospectus.*']) }}">Prospectus Manager</a>
+                            <a href="{{ route('school-setup.index') }}" class="{{ $linkActive(['school-setup.*', 'prospectus.*']) }}">School Setup</a>
                             <a href="{{ route('users.create') }}" class="{{ $linkActive(['users.create', 'users.store']) }}">Create Account</a>
                             <a href="{{ route('users.index') }}" class="{{ $linkActive(['users.index', 'users.edit']) }}">View Accounts</a>
                         </div>

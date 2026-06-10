@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Sf2Report;
 use App\Models\Sf2ReportStudent;
+use App\Services\Sf2AttendanceLogMapper;
 use App\Services\Sf2ExcelExportService;
 use App\Services\Sf2GridBuilder;
 use App\Services\Sf2SchoolCalendar;
@@ -17,6 +18,7 @@ class Sf2ReportController extends Controller
         protected Sf2SchoolCalendar $calendar,
         protected Sf2GridBuilder $grid,
         protected Sf2ExcelExportService $excel,
+        protected Sf2AttendanceLogMapper $logMapper,
     ) {}
 
     public function index()
@@ -31,7 +33,10 @@ class Sf2ReportController extends Controller
 
     public function create()
     {
-        $gradeLevels = config('sf2.grade_levels', []);
+        $rosterData = $this->logMapper->rosterDropdownData();
+        $gradeLevels = $rosterData['grades'] !== []
+            ? $rosterData['grades']
+            : config('sf2.grade_levels', []);
         $defaults = [
             'school_name' => config('app.name'),
             'school_year' => $this->defaultSchoolYear(),
@@ -39,7 +44,26 @@ class Sf2ReportController extends Controller
             'report_year' => (int) now(config('sf2.timezone', 'Asia/Manila'))->format('Y'),
         ];
 
-        return view('sf2.create', compact('gradeLevels', 'defaults'));
+        return view('sf2.create', compact('gradeLevels', 'defaults', 'rosterData'));
+    }
+
+    public function previewFromLogs(Request $request)
+    {
+        $validated = $request->validate([
+            'grade_level' => 'required|string|max:64',
+            'section' => 'required|string|max:64',
+            'report_month' => 'required|integer|min:1|max:12',
+            'report_year' => 'required|integer|min:2000|max:2100',
+        ]);
+
+        $preview = $this->logMapper->buildPreview(
+            $validated['grade_level'],
+            $validated['section'],
+            (int) $validated['report_year'],
+            (int) $validated['report_month']
+        );
+
+        return response()->json($preview);
     }
 
     public function store(Request $request)

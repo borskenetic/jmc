@@ -1,0 +1,43 @@
+.school-setup-page .card-header {
+    background: #fff;
+    color: #22333b;
+}
+
+.school-setup-page .nav-tabs .nav-link {
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.school-setup-page .nav-tabs .nav-link.active {
+    color: var(--brand-button-bg, #1f7a1f);
+}
+
+.school-setup-page .course-list .list-group-item {
+    font-size: 0.875rem;
+}
+
+.school-setup-page .ss-action-btn {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.school-setup-page .ss-add-strand-main {
+    font-weight: 700;
+    padding: 0.4rem 1rem;
+}
+
+.school-setup-page .ss-remove-btn {
+    width: 1.65rem;
+    height: 1.65rem;
+    padding: 0;
+    line-height: 1;
+    font-size: 1.15rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.school-setup-page .grade-section-card .card-header {
+    background: #fff;
+}

@@ -17,6 +17,7 @@ use App\Exports\StudentsListExport;
 use App\Imports\StudentsImport;
 use App\Services\BulkIdCardService;
 use App\Support\PatronOptions;
+use App\Support\SchoolSetupOptions;
 use App\Support\TableColumns;
 use Illuminate\Support\Facades\Schema;
 use Illuminate\Validation\Rule;
@@ -141,7 +142,9 @@ class StudentController extends Controller
     public function create()
     {
         $programs = $this->programList();
-        return view('students.create', compact('programs'));
+        $schoolSetup = SchoolSetupOptions::registrationData();
+
+        return view('students.create', compact('programs', 'schoolSetup'));
     }
 
     // Store new student
@@ -155,13 +158,15 @@ class StudentController extends Controller
             'middle_initial' => 'nullable|string|max:255',
             'birth_date' => 'nullable|date',
             'educational_level' => PatronOptions::educationalLevelRule(),
-            'course' => 'required_if:educational_level,college|nullable|string|max:255',
+            'course' => 'required_if:educational_level,college|required_if:educational_level,high_school_senior|nullable|string|max:255',
             'year' => [
                 'required',
                 'string',
                 'max:255',
                 Rule::in(PatronOptions::yearOptionsFor($request->input('educational_level'))),
             ],
+            'section' => 'nullable|string|max:64',
+            'sex' => 'nullable|in:male,female',
             'profile_picture' => 'nullable|image|mimes:jpg,jpeg,png|max:4096',
             'student_signature' => 'nullable|string', // base64
             'mobile_number' => 'nullable|string|max:20',
@@ -228,8 +233,9 @@ class StudentController extends Controller
     {
         $student = Student::findOrFail($id);
         $programs = $this->programList();
+        $schoolSetup = SchoolSetupOptions::registrationData();
 
-        return view('students.edit', compact('student', 'programs'));
+        return view('students.edit', compact('student', 'programs', 'schoolSetup'));
     }
 
     // Update student
@@ -244,13 +250,15 @@ class StudentController extends Controller
             'middle_initial' => 'nullable|string|max:255',
             'birth_date' => 'nullable|date',
             'educational_level' => PatronOptions::educationalLevelRule(),
-            'course' => 'required_if:educational_level,college|nullable|string|max:255',
+            'course' => 'required_if:educational_level,college|required_if:educational_level,high_school_senior|nullable|string|max:255',
             'year' => [
                 'required',
                 'string',
                 'max:255',
                 Rule::in(PatronOptions::yearOptionsFor($request->input('educational_level'))),
             ],
+            'section' => 'nullable|string|max:64',
+            'sex' => 'nullable|in:male,female',
 
             'mobile_number' => 'nullable|string|max:20',
             'address' => 'nullable|string',
@@ -371,6 +379,8 @@ class StudentController extends Controller
             'blood_type' => $pending->blood_type,
             'course' => $pending->course,
             'year' => $pending->year,
+            'section' => $pending->section,
+            'sex' => $pending->sex,
             'educational_level' => $pending->educational_level?->value
                 ?? $pending->educational_level
                 ?? 'college',

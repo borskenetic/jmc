@@ -16,15 +16,21 @@ class Program extends Model
     {
         return $this->hasMany(ProgramYear::class);
     }
-    
+
+    public function courses()
+    {
+        return $this->hasMany(ProgramCourse::class);
+    }
+
     protected static function boot()
     {
         parent::boot();
 
         static::deleting(function ($program) {
-            // Delete all related years and their courses
+            $program->courses()->delete();
+
             foreach ($program->years as $year) {
-                $year->courses()->delete();
+                $year->courses()->whereNull('program_id')->delete();
                 $year->delete();
             }
         });

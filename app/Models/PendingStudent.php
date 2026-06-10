@@ -16,6 +16,8 @@ class PendingStudent extends Model
         'blood_type',
         'course',
         'year',
+        'section',
+        'sex',
         'educational_level',
         'mobile_number',
         'profile_picture',

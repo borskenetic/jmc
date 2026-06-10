@@ -4,9 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\AttendanceLog;
-use App\Models\Setting;
+use App\Models\GradeSection;
 use App\Models\Student;
+use Illuminate\Support\Facades\Schema;
 use App\Services\PatronAttendanceReportService;
+use App\Support\PatronOptions;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Exports\AttendanceLogsExport;
@@ -15,20 +17,55 @@ class AttendanceLogController extends Controller
 {
     public function index(Request $request)
     {
-        $logs = $this->filteredLogs($request)
-            ->paginate(10)
+        $baseQuery = $this->filteredLogs($request);
+
+        $logs = (clone $baseQuery)
+            ->paginate(25)
             ->withQueryString();
 
-        // ✅ Get distinct courses for dropdown
-        $courses = Student::select('course')
-            ->whereNotNull('course')
-            ->distinct()
-            ->orderBy('course')
-            ->pluck('course');
+        $summary = $this->summaryForQuery(clone $baseQuery);
 
-        $sections = Setting::attendanceSections();
+        $yearOptions = PatronOptions::allYearOptions();
 
-        return view('attendance_logs.index', compact('logs', 'courses', 'sections'));
+        $homeroomSections = collect();
+        if (Schema::hasTable('grade_sections')) {
+            $homeroomSections = $homeroomSections->merge(
+                GradeSection::query()->orderBy('section')->pluck('section')
+            );
+        }
+        $homeroomSections = $homeroomSections
+            ->merge(
+                Student::query()
+                    ->whereNotNull('section')
+                    ->where('section', '!=', '')
+                    ->distinct()
+                    ->orderBy('section')
+                    ->pluck('section')
+            )
+            ->unique()
+            ->sort()
+            ->values();
+
+        return view('attendance_logs.index', compact(
+            'logs',
+            'summary',
+            'yearOptions',
+            'homeroomSections',
+        ));
+    }
+
+    /** @return array{total: int, in: int, out: int, today: int} */
+    private function summaryForQuery($query): array
+    {
+        $tz = config('app.timezone', 'Asia/Manila');
+        $today = now($tz)->toDateString();
+
+        return [
+            'total' => (clone $query)->count(),
+            'in' => (clone $query)->where('status', 'IN')->count(),
+            'out' => (clone $query)->where('status', 'OUT')->count(),
+            'today' => (clone $query)->whereDate('scanned_at', $today)->count(),
+        ];
     }
 
     private function filteredLogs(Request $request)
@@ -41,37 +78,29 @@ class AttendanceLogController extends Controller
             ->when($request->to,
                 fn($q) => $q->whereDate('scanned_at', '<=', $request->to))
 
-            ->when($request->section,
-                fn($q) => $q->where('section', $request->section))
-
-            ->when($request->year_level,
-                fn($q) => $q->whereHas('student',
-                    fn($q2) => $q2->where('year', $request->year_level)
+            ->when($request->year ?: $request->year_level,
+                fn ($q) => $q->whereHas('student',
+                    fn ($q2) => $q2->where('year', $request->year ?: $request->year_level)
                 ))
 
-            // ✅ NEW COURSE FILTER
-            ->when($request->course,
-                fn($q) => $q->whereHas('student',
-                    fn($q2) => $q2->where('course', $request->course)
+            ->when($request->homeroom_section,
+                fn ($q) => $q->whereHas('student',
+                    fn ($q2) => $q2->where('section', $request->homeroom_section)
                 ))
 
             ->when($request->status,
-                fn($q) => $q->where('status', strtoupper($request->status))
+                fn ($q) => $q->where('status', strtoupper((string) $request->status))
             )
 
             ->when($request->search, function ($q) use ($request) {
                 $search = $request->search;
 
                 $q->where(function ($query) use ($search) {
-
-                    $query->where('section', 'like', "%{$search}%")
-
-                        ->orWhereHas('student', function ($q2) use ($search) {
-                            $q2->where('firstname', 'like', "%{$search}%")
-                               ->orWhere('lastname', 'like', "%{$search}%")
-                               ->orWhere('course', 'like', "%{$search}%");
-                        });
-
+                    $query->whereHas('student', function ($q2) use ($search) {
+                        $q2->where('firstname', 'like', "%{$search}%")
+                            ->orWhere('lastname', 'like', "%{$search}%")
+                            ->orWhere('student_id', 'like', "%{$search}%");
+                    });
                 });
             })
 

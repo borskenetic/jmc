@@ -74,9 +74,12 @@
                         </div>
                         @include('students.partials.educational-fields', [
                             'programs' => $programs,
+                            'schoolSetup' => $schoolSetup ?? [],
                             'educationalLevel' => old('educational_level'),
                             'year' => old('year'),
                             'course' => old('course'),
+                            'section' => old('section'),
+                            'sex' => old('sex'),
                         ])
                         <div class="col-md-6">
                             <label for="birth_date" class="form-label">Birthday</label>

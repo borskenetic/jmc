@@ -7,6 +7,7 @@ use App\Models\AttendanceLog;
 use App\Models\Setting;
 use App\Models\Student;
 use App\Services\AttendanceSessionService;
+use App\Services\FaceMatchService;
 use App\Services\StudentDeparturePolicy;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -15,15 +16,33 @@ class AttendanceController extends Controller
 {
     public function showScanner()
     {
+        return view('attendance.scan', $this->scannerViewData());
+    }
+
+    public function showFaceScanner(FaceMatchService $faces)
+    {
+        if (! config('face.enabled')) {
+            abort(404);
+        }
+
+        return view('attendance.face_scan', array_merge($this->scannerViewData(), [
+            'faceEnrolledCount' => $faces->enrolledCount(),
+            'faceModelCdn' => config('face.model_cdn'),
+        ]));
+    }
+
+    /** @return array<string, mixed> */
+    protected function scannerViewData(): array
+    {
         $departure = app(StudentDeparturePolicy::class);
 
-        return view('attendance.scan', [
+        return [
             'logoutFeedbackEnabled' => Setting::logoutFeedbackEnabled(),
             'sectionPickerEnabled' => Setting::sectionPickerEnabled(),
             'attendanceSections' => Setting::attendanceSections(),
             'earlyDepartureEnabled' => $departure->isEnabled(),
             'earlyDepartureCutoffLabel' => $departure->earliestOutLabel(),
-        ]);
+        ];
     }
 
     public function feedbackSettings()
@@ -96,6 +115,35 @@ class AttendanceController extends Controller
             ]);
         }
 
+        return response()->json($this->buildScanResponse($student));
+    }
+
+    public function identifyByFace(Request $request, FaceMatchService $faces)
+    {
+        if (! config('face.enabled')) {
+            abort(404);
+        }
+
+        $request->validate([
+            'descriptor' => 'required|array|size:'.config('face.descriptor_length', 128),
+            'descriptor.*' => 'numeric',
+        ]);
+
+        $match = $faces->findBestMatch($request->input('descriptor'));
+
+        if ($match === null) {
+            return response()->json([
+                'type' => 'error',
+                'message' => 'Face not recognized. Please enroll or try again.',
+            ]);
+        }
+
+        return response()->json($this->buildScanResponse($match['student']));
+    }
+
+    /** @return array<string, mixed> */
+    protected function buildScanResponse(Student $student): array
+    {
         app(AttendanceSessionService::class)->closeStaleOpenInForStudent($student);
 
         $sessions = app(AttendanceSessionService::class);
@@ -108,7 +156,7 @@ class AttendanceController extends Controller
 
         $departure = app(StudentDeparturePolicy::class);
         if ($nextStatus === 'OUT' && $departure->blocksCheckout($student)) {
-            return response()->json([
+            return [
                 'type' => 'early_out_blocked',
                 'message' => $this->earlyOutMessage($departure),
                 'allowed_after' => $departure->earliestOutLabel(),
@@ -121,10 +169,10 @@ class AttendanceController extends Controller
                     'educational_level' => $student->educational_level?->label()
                         ?? $student->educational_level,
                 ],
-            ]);
+            ];
         }
 
-        return response()->json([
+        return [
             'type' => 'student',
             'next_status' => $nextStatus,
             'student_id' => $student->id,
@@ -136,7 +184,7 @@ class AttendanceController extends Controller
                 'lastname' => $student->lastname,
                 'profile_picture' => $student->profile_picture,
             ],
-        ]);
+        ];
     }
 
     public function processSection(Request $request)
