@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>{{ config('app.name') }} — Attendance Scanner</title>
+  <title>{{ config('app.name') }} — Attendance</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="{{ \App\Support\Branding::stylesheetUrl() }}">
   <link rel="stylesheet" href="{{ \App\Support\VersionedAsset::url('css/attendance/scan.css') }}">
@@ -13,7 +13,6 @@
   <div class="header">
     <div class="logo-title">
       <img src="{{ asset('images/pantasLogo.png') }}" alt="Logo">
-      <div class="system-title">Powered by Pantas</div>
     </div>
     @if(config('face.enabled'))
       <a href="{{ route('attendance.face') }}" class="small text-white text-decoration-none ms-3">Face scanner</a>
@@ -35,6 +34,17 @@
       <p class="early-out-alarm__hint">Allowed after <strong id="earlyOutAlarmTime">{{ $earlyDepartureCutoffLabel ?? '4:00 PM' }}</strong></p>
     </div>
   </div>
+  
+  <div class="sidebar-divider" id="scanDivider">
+    <div class="scan-name-display scan-name-display--example" id="scanNameDisplay">
+      <div class="scan-name-welcome">Welcome,</div>
+      <div class="scan-name-text" id="scanNameText">Juan Dela Cruz</div>
+      <div class="scan-status-badge" id="scanStatusBadge">IN</div>
+      <div class="scan-name-timestamp" id="scanNameTimestamp">Example Name</div>
+    </div>
+  </div>
+
+ 
 
   <div class="right-content">
     <form id="scanForm">
@@ -51,7 +61,11 @@
   <div class="footer1">
     <div class="footer-logo">
       <div class="marquee-container">
-        <div class="marquee">Welcome to {{ config('app.name') }}</div>
+        <div class="marquee">
+          <span>Welcome to {{ config('app.name') }}</span>
+          <span class="marquee-powered">Powered By: {{ config('app.name_short') }}</span>
+        </div>
+ 
       </div>
     </div>
   </div>
@@ -108,10 +122,30 @@
     setInterval(() => input.focus(), 100);
     input.focus();
 
+    function showDividerName(name, status, timestamp, isOut) {
+      const display = document.getElementById('scanNameDisplay');
+      const nameEl = document.getElementById('scanNameText');
+      const badgeEl = document.getElementById('scanStatusBadge');
+      const tsEl = document.getElementById('scanNameTimestamp');
+      if (!display) return;
+      nameEl.textContent = name;
+      badgeEl.textContent = status;
+      badgeEl.className = 'scan-status-badge' + (isOut ? ' scan-status-out' : '');
+      tsEl.textContent = timestamp || '';
+      display.classList.remove('scan-name-display--example');
+      display.hidden = false;
+    }
+
+    function hideDividerName() {
+      const display = document.getElementById('scanNameDisplay');
+      if (display) display.hidden = true;
+    }
+
     function clearDisplay() {
       if (feedbackModal && feedbackModal.style.display === 'flex') return;
       profileImg.src = "{{ asset('images/2x2_undifined_gender.jpg') }}";
       document.querySelectorAll('.name-box').forEach(box => box.remove());
+      hideDividerName();
       hideEarlyOutAlarm();
       selectedStudent = null;
       currentStudentId = null;
@@ -250,7 +284,7 @@
                   return;
                 }
                 const div = document.createElement('div');
-                div.classList.add('name-box');
+                div.classList.add('name-box', 'scan-result-box');
                 div.innerHTML = `
                   <div class="student-name">${selectedStudent.firstname} ${selectedStudent.lastname}</div>
                   <div class="label">Name</div>
@@ -258,6 +292,7 @@
                   <div class="timestamp">${response.scanned_at}</div>
                 `;
                 sidebar.appendChild(div);
+                showDividerName(`${selectedStudent.firstname} ${selectedStudent.lastname}`, 'OUT', response.scanned_at, true);
 
                 const feedbackOn = response.logout_feedback_enabled ?? data.logout_feedback_enabled ?? LOGOUT_FEEDBACK_ENABLED;
                 if (feedbackOn) {
@@ -284,7 +319,7 @@
                 .then(res => res.json())
                 .then(response => {
                   const div = document.createElement('div');
-                  div.classList.add('name-box');
+                  div.classList.add('name-box', 'scan-result-box');
                   div.innerHTML = `
                     <div class="student-name">${selectedStudent.firstname} ${selectedStudent.lastname}</div>
                     <div class="label">Name</div>
@@ -292,13 +327,14 @@
                     <div class="timestamp">${response.scanned_at}</div>
                   `;
                   sidebar.appendChild(div);
+                  showDividerName(`${selectedStudent.firstname} ${selectedStudent.lastname}`, response.status, response.scanned_at, false);
                   scheduleClear(3000);
                 });
               }
             }
           } else if (data.type === 'error') {
             const div = document.createElement('div');
-            div.classList.add('name-box');
+            div.classList.add('name-box', 'scan-error-box');
             div.innerHTML = `
               <div class="student-name">${data.message}</div>
               <div class="label">Error</div>
@@ -334,7 +370,7 @@
           sectionModal.setAttribute('aria-hidden', 'true');
 
           const div = document.createElement('div');
-          div.classList.add('name-box');
+          div.classList.add('name-box', 'scan-result-box');
           div.innerHTML = `
             <div class="student-name">${selectedStudent.firstname} ${selectedStudent.lastname}</div>
             <div class="label">${this.dataset.section}</div>
@@ -342,6 +378,7 @@
             <div class="timestamp">${response.scanned_at}</div>
           `;
           sidebar.appendChild(div);
+          showDividerName(`${selectedStudent.firstname} ${selectedStudent.lastname}`, response.status, response.scanned_at, false);
           scheduleClear(3000);
         });
       });

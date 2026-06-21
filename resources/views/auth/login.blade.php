@@ -32,7 +32,6 @@
                 name="email"
                 class="auth-input"
                 value="{{ old('email') }}"
-                placeholder="you@school.edu"
                 required
                 autofocus
                 autocomplete="username"
