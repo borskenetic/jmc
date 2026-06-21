@@ -1,0 +1,114 @@
+.sf2-attendance-cal {
+  margin-top: 0.25rem;
+}
+
+.sf2-cal-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.sf2-cal-toolbar .btn-group .btn.active {
+  font-weight: 600;
+}
+
+.sf2-cal-mode[data-mode="absent"].active {
+  background-color: #dc3545;
+  border-color: #dc3545;
+  color: #fff;
+}
+
+.sf2-cal-mode[data-mode="tardy"].active {
+  background-color: #fd7e14;
+  border-color: #fd7e14;
+  color: #fff;
+}
+
+.sf2-cal-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 3px;
+  max-width: 320px;
+}
+
+.sf2-cal-dow {
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-align: center;
+  color: #6c757d;
+  padding: 2px 0;
+}
+
+.sf2-cal-day {
+  border: 1px solid #dee2e6;
+  background: #fff;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  padding: 4px 0;
+  min-height: 28px;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.sf2-cal-day:hover:not(:disabled) {
+  border-color: #0d6efd;
+  background: #f0f7ff;
+}
+
+.sf2-cal-day.is-weekend {
+  background: #f8f9fa;
+  color: #adb5bd;
+  cursor: default;
+  border-color: #eee;
+}
+
+.sf2-cal-day.is-absent {
+  background: #dc3545;
+  border-color: #bb2d3b;
+  color: #fff;
+  font-weight: 600;
+}
+
+.sf2-cal-day.is-tardy {
+  background: linear-gradient(to bottom, #fd7e14 50%, #fff 50%);
+  border-color: #e8590c;
+  color: #212529;
+  font-weight: 600;
+}
+
+.sf2-cal-day.is-outside-month {
+  visibility: hidden;
+  pointer-events: none;
+  border: none;
+  min-height: 0;
+  padding: 0;
+}
+
+.sf2-cal-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+  font-size: 0.7rem;
+  color: #6c757d;
+  margin-top: 0.35rem;
+}
+
+.sf2-cal-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+}
+
+.sf2-cal-swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 3px;
+  border: 1px solid #ccc;
+  display: inline-block;
+}
+
+.sf2-cal-swatch.absent { background: #dc3545; border-color: #bb2d3b; }
+.sf2-cal-swatch.tardy { background: linear-gradient(to bottom, #fd7e14 50%, #fff 50%); }
+.sf2-cal-swatch.present { background: #fff; }

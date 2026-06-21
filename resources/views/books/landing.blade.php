@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <title>Library Landing</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="{{ asset('public/css/books/landing.css') }}">
+    <link rel="stylesheet" href="{{ asset('css/books/landing.css') }}">
 </head>
 
 <body>
@@ -40,14 +40,14 @@
             <div class="carousel-track" id="carouselTrack">
                 @foreach ($carouselBooks as $book)
                 <div class="carosel" onclick="showBookDetails(
-              '{{ $book->cover_image ? asset('public/storage/' . $book->cover_image) : asset('images/defaultBook.png') }}',
+              '{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/defaultBook.png') }}',
               '{{ $book->title_statement }}',
               '{{ $book->main_author }}',
               '{{ $book->call_number }}',
                {{ $book->id }},
               '{{ $book->availability }}'
             )">
-                    <img src="{{ $book->cover_image ? asset('public/storage/' . $book->cover_image) : asset('images/defaultBook.png') }}"
+                    <img src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/defaultBook.png') }}"
                         alt="{{ $book->title_statement }}">
                     <p>{{ $book->title_statement }}</p>
                 </div>
@@ -123,7 +123,7 @@
                     data-course="{{ $book->course ?? 'General' }}"
                     data-program="{{ $book->program ?? 'General'}}"
                     data-category="{{ $book->course ?? 'General' }}" onclick="showBookDetails(
-              '{{ $book->cover_image ? asset('public/storage/' . $book->cover_image) : asset('images/defaultBook.png') }}',
+              '{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/defaultBook.png') }}',
               '{{ $book->title_statement }}',
               '{{ $book->main_author }}',
               '{{ $book->call_number }}',
@@ -133,7 +133,7 @@
                     <p class="{{ $book->availability === 'Available' ? 'text-success' : 'text-danger' }}">
                         {{ $book->availability }}
                     </p>
-                    <img src="{{ $book->cover_image ? asset('public/storage/' . $book->cover_image) : asset('images/defaultBook.png') }}"
+                    <img src="{{ $book->cover_image ? asset('storage/' . $book->cover_image) : asset('images/defaultBook.png') }}"
                         alt="{{ $book->title_statement }}">
                     <p>{{ $book->title_statement }}</p>
                 </div>

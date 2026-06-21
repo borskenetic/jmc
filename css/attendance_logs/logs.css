@@ -1,0 +1,94 @@
+.attendance-logs-page .al-summary {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-bottom: 1rem;
+}
+
+.attendance-logs-page .al-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.35rem 0.75rem;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid rgba(34, 51, 59, 0.12);
+    color: #374151;
+}
+
+.attendance-logs-page .al-chip strong {
+    font-weight: 700;
+    color: #22333b;
+}
+
+.attendance-logs-page .al-chip--in {
+    border-color: rgba(22, 163, 74, 0.35);
+    background: rgba(22, 163, 74, 0.08);
+    color: #166534;
+}
+
+.attendance-logs-page .al-chip--out {
+    border-color: rgba(220, 38, 38, 0.35);
+    background: rgba(220, 38, 38, 0.08);
+    color: #991b1b;
+}
+
+.attendance-logs-page .al-filter-card .form-label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: #6b7280;
+    margin-bottom: 0.25rem;
+}
+
+.attendance-logs-page .al-table th {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    color: #6b7280;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.attendance-logs-page .al-table td {
+    vertical-align: middle;
+    font-size: 0.875rem;
+}
+
+.attendance-logs-page .al-student-name {
+    font-weight: 600;
+    color: #22333b;
+}
+
+.attendance-logs-page .al-student-meta {
+    font-size: 0.75rem;
+    color: #6b7280;
+}
+
+.attendance-logs-page .badge-in {
+    background-color: #16a34a;
+}
+
+.attendance-logs-page .badge-out {
+    background-color: #dc2626;
+}
+
+.attendance-logs-page .al-time {
+    white-space: nowrap;
+    font-variant-numeric: tabular-nums;
+}
+
+.attendance-logs-page .al-active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    margin-top: 0.75rem;
+}
+
+.attendance-logs-page .al-active-filters .badge {
+    font-weight: 500;
+    font-size: 0.75rem;
+}

@@ -1,0 +1,122 @@
+.school-setup-page .card-header {
+    background: #fff;
+    color: #22333b;
+}
+
+.school-setup-page .program-card-header {
+    background: var(--brand-card-header-bg, #22333b) !important;
+    color: var(--brand-card-header-text, #fff) !important;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.school-setup-page .program-card-title {
+    color: inherit;
+}
+
+.school-setup-page .ss-toolbar-btn {
+    font-weight: 700;
+    font-size: 0.8125rem;
+    padding: 0.4rem 0.85rem;
+    border-width: 0;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+    white-space: nowrap;
+}
+
+.school-setup-page .program-card-actions .btn-warning {
+    background-color: #fbbf24;
+    color: #1f2937;
+}
+
+.school-setup-page .program-card-actions .btn-warning:hover {
+    background-color: #f59e0b;
+    color: #111827;
+}
+
+.school-setup-page .program-card-actions .btn-danger {
+    background-color: #ef4444;
+    color: #fff;
+}
+
+.school-setup-page .program-card-actions .btn-danger:hover {
+    background-color: #dc2626;
+    color: #fff;
+}
+
+.school-setup-page .program-card-actions .ss-courses-btn {
+    background-color: #fff;
+    color: #22333b;
+}
+
+.school-setup-page .program-card-actions .ss-courses-btn:hover {
+    background-color: #f3f4f6;
+    color: #111827;
+}
+
+.school-setup-page .nav-tabs .nav-link {
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.school-setup-page .nav-tabs .nav-link.active {
+    color: var(--brand-button-bg, #1f7a1f);
+}
+
+.school-setup-page .course-list .list-group-item {
+    font-size: 0.875rem;
+}
+
+.school-setup-page .ss-action-btn {
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.school-setup-page .ss-add-strand-main {
+    font-weight: 700;
+    padding: 0.4rem 1rem;
+}
+
+.school-setup-page .ss-program-add-btn,
+.school-setup-page .ss-course-add-btn {
+    font-weight: 700;
+    font-size: 0.9375rem;
+    padding: 0.5rem 0.75rem;
+    box-shadow: 0 1px 3px rgba(34, 51, 59, 0.12);
+}
+
+.school-setup-page .ss-program-add-btn {
+    background-color: var(--brand-button-bg, #1f7a1f);
+    border-color: var(--brand-button-bg, #1f7a1f);
+}
+
+.school-setup-page .ss-program-add-btn:hover {
+    background-color: var(--brand-button-hover-bg, #ffb845);
+    border-color: var(--brand-button-hover-bg, #ffb845);
+    color: var(--brand-button-hover-text, #22333b);
+}
+
+.school-setup-page .ss-course-add-btn {
+    background-color: #198754;
+    border-color: #198754;
+}
+
+.school-setup-page .ss-course-add-btn:hover {
+    background-color: #157347;
+    border-color: #157347;
+    color: #fff;
+}
+
+.school-setup-page .ss-remove-btn {
+    width: 1.65rem;
+    height: 1.65rem;
+    padding: 0;
+    line-height: 1;
+    font-size: 1.15rem;
+    font-weight: 700;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.school-setup-page .grade-section-card .card-header {
+    background: #fff;
+}
