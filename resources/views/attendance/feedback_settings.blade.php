@@ -3,9 +3,9 @@
 @section('content')
 <div class="container py-4" style="max-width: 720px;">
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-        <h3 class="mb-0">Logout feedback (attendance scanner)</h3>
+        <h3 class="mb-0">Logout feedback (gate terminal)</h3>
         <a href="{{ route('attendance.scan') }}" class="btn btn-outline-secondary btn-sm" target="_blank" rel="noopener">
-            Open scanner
+            Open gate terminal
         </a>
     </div>
 
@@ -42,7 +42,7 @@
     <div class="card">
         <div class="card-header fw-semibold">Preview</div>
         <div class="card-body text-center">
-            <p class="small text-muted mb-3">Rating options shown on the scanner:</p>
+            <p class="small text-muted mb-3">Rating options shown on the gate terminal:</p>
             <div class="d-flex flex-wrap justify-content-center gap-2">
                 <span class="badge bg-light text-dark border">😊 Excellent</span>
                 <span class="badge bg-light text-dark border">🙂 Good</span>

@@ -53,7 +53,7 @@
                 <div class="faq-item">
                     <p><strong>Where do I sign in for attendance?</strong></p>
                     <p class="mb-0 mt-2">
-                        <a href="{{ route('attendance.scan') }}" class="faq-toggle">Open the attendance scanner</a>
+                        <a href="{{ route('attendance.scan') }}" class="faq-toggle">Open the gate terminal</a>
                     </p>
                 </div>
 

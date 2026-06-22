@@ -3,10 +3,10 @@
     $user = Auth::user();
 
     $attendanceChildren = [
-        ['label' => 'Scanner',      'route' => 'attendance.scan',        'patterns' => ['attendance.scan', 'attendance.process'], 'icon' => 'scan', 'target' => '_blank'],
+        ['label' => 'Gate Terminal',      'route' => 'attendance.scan',        'patterns' => ['attendance.scan', 'attendance.process'], 'icon' => 'scan', 'target' => '_blank'],
     ];
     if (config('face.enabled')) {
-        $attendanceChildren[] = ['label' => 'Face Scanner', 'route' => 'attendance.face', 'patterns' => ['attendance.face', 'attendance.face.identify'], 'icon' => 'scan', 'target' => '_blank'];
+        $attendanceChildren[] = ['label' => 'Face Gate Terminal', 'route' => 'attendance.face', 'patterns' => ['attendance.face', 'attendance.face.identify'], 'icon' => 'scan', 'target' => '_blank'];
     }
     $attendanceChildren[] = ['label' => 'Manage Video', 'route' => 'attendance.changeVideo', 'patterns' => ['attendance.changeVideo', 'attendance.uploadVideo'], 'icon' => 'settings'];
 
@@ -51,7 +51,7 @@
             'children' => [
                 ['label' => 'Feedback',        'route' => 'feedback.index',  'patterns' => ['feedback.index'],                            'icon' => 'message'],
                 ['label' => 'SMS Blast',       'route' => 'sms.page',        'patterns' => ['sms.page', 'sms.send'],                      'icon' => 'send'],
-                ['label' => 'Scanner Message', 'route' => 'sms.scanMessage', 'patterns' => ['sms.scanMessage', 'sms.scanMessage.update'], 'icon' => 'settings'],
+                ['label' => 'Gate Terminal Message', 'route' => 'sms.scanMessage', 'patterns' => ['sms.scanMessage', 'sms.scanMessage.update'], 'icon' => 'settings'],
             ],
         ],
     ];

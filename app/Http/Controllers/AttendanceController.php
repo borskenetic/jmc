@@ -89,8 +89,8 @@ class AttendanceController extends Controller
         return back()->with(
             'success',
             $request->input('enabled') === '1'
-                ? 'Logout feedback is now enabled on the attendance scanner.'
-                : 'Logout feedback is now disabled on the attendance scanner.'
+                ? 'Logout feedback is now enabled on the gate terminal.'
+                : 'Logout feedback is now disabled on the gate terminal.'
         );
     }
 
@@ -131,7 +131,7 @@ class AttendanceController extends Controller
         return back()->with(
             'success',
             $pickerOn
-                ? 'Section picker enabled with '.count($sections).' section(s) on the scanner.'
+                ? 'Section picker enabled with '.count($sections).' section(s) on the gate terminal.'
                 : 'Section picker disabled. '.count($sections).' section(s) saved for logs and filters.'
         );
     }

@@ -4,118 +4,199 @@
 
 @push('styles')
     <link rel="stylesheet" href="{{ asset('css/layout/data-pages.css') }}">
-    <link rel="stylesheet" href="{{ asset('css/attendance_logs/logs.css') }}">
+    <link rel="stylesheet" href="{{ \App\Support\VersionedAsset::url('css/attendance_logs/logs.css') }}">
 @endpush
 
 @section('content')
 @php
     $query = request()->query();
     $hasFilters = collect($query)->except('page')->filter()->isNotEmpty();
+    $tz = config('app.timezone', 'Asia/Manila');
+    $today = now($tz)->toDateString();
+    $weekStart = now($tz)->startOfWeek()->toDateString();
+    $monthStart = now($tz)->startOfMonth()->toDateString();
+    $currentStatus = strtoupper((string) request('status'));
+
+    $filterUrl = function (array $merge = [], array $except = []) use ($query) {
+        $params = collect($query)->except(array_merge(['page'], $except))->merge($merge)->filter(fn ($v) => $v !== null && $v !== '')->all();
+
+        return route('attendance_logs.index', $params);
+    };
+
+    $isDatePreset = fn (string $preset) => match ($preset) {
+        'today' => request('from') === $today && request('to') === $today,
+        'week' => request('from') === $weekStart && request('to') === $today,
+        'month' => request('from') === $monthStart && request('to') === $today,
+        'all' => ! request('from') && ! request('to'),
+        default => false,
+    };
 @endphp
 
 <div class="data-page attendance-logs-page">
-    <div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-2">
-        <div>
-            <h4 class="mb-1">Attendance Logs</h4>
-            <p class="text-muted small mb-0">School-wide scan history. Filter by date, grade, section, or status.</p>
+    <header class="al-header">
+        <div class="al-header__text">
+            <h1 class="al-title">Attendance Logs</h1>
+            <p class="al-subtitle">Gate terminal scan history — filter by date, grade, section, or status.</p>
         </div>
-        <div class="d-flex flex-wrap gap-2">
-            <a href="{{ route('attendance.scan') }}" target="_blank" rel="noopener" class="btn btn-primary btn-sm">
-                Open Attendance Scanner
+        <div class="al-header__actions">
+            <a href="{{ route('attendance.scan') }}" target="_blank" rel="noopener" class="al-btn al-btn--primary">
+                <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 3H4a1 1 0 0 0-1 1v3"/><path d="M17 3h3a1 1 0 0 1 1 1v3"/><path d="M7 21H4a1 1 0 0 1-1-1v-3"/><path d="M17 21h3a1 1 0 0 0 1-1v-3"/><path d="M8 12h8"/></svg>
+                Gate Terminal
             </a>
-            <a href="{{ route('attendance_logs.reports.hub') }}" class="btn btn-outline-secondary btn-sm">Reports</a>
-            <a href="{{ route('attendance_logs.export.excel', $query) }}" class="btn btn-outline-secondary btn-sm">Excel</a>
-            <a href="{{ route('attendance_logs.export.pdf', $query) }}" class="btn btn-outline-secondary btn-sm">PDF</a>
+            <a href="{{ route('attendance_logs.reports.hub') }}" class="al-btn al-btn--ghost">Reports</a>
+            <div class="dropdown">
+                <button class="al-btn al-btn--ghost dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                    Export
+                </button>
+                <ul class="dropdown-menu dropdown-menu-end al-export-menu">
+                    <li><a class="dropdown-item" href="{{ route('attendance_logs.export.excel', $query) }}">Download Excel</a></li>
+                    <li><a class="dropdown-item" href="{{ route('attendance_logs.export.pdf', $query) }}">Download PDF</a></li>
+                </ul>
+            </div>
+        </div>
+    </header>
+
+    <div class="al-stats">
+        <div class="al-stat-card">
+            <span class="al-stat-card__label">Matching records</span>
+            <strong class="al-stat-card__value">{{ number_format($summary['total']) }}</strong>
+        </div>
+        <div class="al-stat-card al-stat-card--in">
+            <span class="al-stat-card__label">Check-ins</span>
+            <strong class="al-stat-card__value">{{ number_format($summary['in']) }}</strong>
+        </div>
+        <div class="al-stat-card al-stat-card--out">
+            <span class="al-stat-card__label">Check-outs</span>
+            <strong class="al-stat-card__value">{{ number_format($summary['out']) }}</strong>
+        </div>
+        <div class="al-stat-card al-stat-card--today">
+            <span class="al-stat-card__label">Today</span>
+            <strong class="al-stat-card__value">{{ number_format($summary['today']) }}</strong>
         </div>
     </div>
 
-    <div class="al-summary">
-        <span class="al-chip"><strong>{{ number_format($summary['total']) }}</strong> matching</span>
-        <span class="al-chip al-chip--in"><strong>{{ number_format($summary['in']) }}</strong> IN</span>
-        <span class="al-chip al-chip--out"><strong>{{ number_format($summary['out']) }}</strong> OUT</span>
-        @if($summary['today'] > 0)
-            <span class="al-chip"><strong>{{ number_format($summary['today']) }}</strong> today</span>
-        @endif
-    </div>
+    <section class="al-controls" aria-label="Filter attendance logs">
+        <form method="GET" class="al-controls__form" id="alFilterForm">
+            <div class="al-search-row">
+                <label class="al-search" for="alSearch">
+                    <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="7"/><path d="m20 20-3.5-3.5"/></svg>
+                    <input type="search" id="alSearch" name="search" value="{{ request('search') }}"
+                           placeholder="Search by name or student ID…" autocomplete="off">
+                </label>
+                <button type="submit" class="al-btn al-btn--primary al-btn--search">Search</button>
+            </div>
 
-    <div class="card al-filter-card mb-3 shadow-sm">
-        <div class="card-body py-3">
-            <form method="GET" class="row g-2 align-items-end">
-                <div class="col-lg-3 col-md-6">
-                    <label class="form-label">Search</label>
-                    <input type="text" name="search" class="form-control form-control-sm"
-                           value="{{ request('search') }}" placeholder="Name or student ID…">
+            <div class="al-control-row">
+                <div class="al-control-group">
+                    <span class="al-control-group__label">Period</span>
+                    <div class="al-pills" role="group" aria-label="Date period">
+                        <a href="{{ $filterUrl(['from' => $today, 'to' => $today]) }}"
+                           class="al-pill {{ $isDatePreset('today') ? 'is-active' : '' }}">Today</a>
+                        <a href="{{ $filterUrl(['from' => $weekStart, 'to' => $today]) }}"
+                           class="al-pill {{ $isDatePreset('week') ? 'is-active' : '' }}">This week</a>
+                        <a href="{{ $filterUrl(['from' => $monthStart, 'to' => $today]) }}"
+                           class="al-pill {{ $isDatePreset('month') ? 'is-active' : '' }}">This month</a>
+                        <a href="{{ $filterUrl([], ['from', 'to']) }}"
+                           class="al-pill {{ $isDatePreset('all') ? 'is-active' : '' }}">All time</a>
+                    </div>
                 </div>
-                <div class="col-lg-2 col-md-3 col-6">
-                    <label class="form-label">From</label>
-                    <input type="date" name="from" class="form-control form-control-sm" value="{{ request('from') }}">
-                </div>
-                <div class="col-lg-2 col-md-3 col-6">
-                    <label class="form-label">To</label>
-                    <input type="date" name="to" class="form-control form-control-sm" value="{{ request('to') }}">
-                </div>
-                <div class="col-lg-2 col-md-4 col-6">
-                    <label class="form-label">Grade</label>
-                    <select name="year" class="form-select form-select-sm">
-                        <option value="">All grades</option>
-                        @foreach($yearOptions as $year)
-                            <option value="{{ $year }}" @selected(request('year') === $year)>{{ $year }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-lg-2 col-md-4 col-6">
-                    <label class="form-label">Section</label>
-                    <select name="homeroom_section" class="form-select form-select-sm">
-                        <option value="">All sections</option>
-                        @foreach($homeroomSections as $section)
-                            <option value="{{ $section }}" @selected(request('homeroom_section') === $section)>{{ $section }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                <div class="col-lg-1 col-md-4 col-6">
-                    <label class="form-label">Status</label>
-                    <select name="status" class="form-select form-select-sm">
-                        <option value="">All</option>
-                        <option value="IN" @selected(strtoupper((string) request('status')) === 'IN')>IN</option>
-                        <option value="OUT" @selected(strtoupper((string) request('status')) === 'OUT')>OUT</option>
-                    </select>
-                </div>
-                <div class="col-lg-2 col-md-4 col-6 d-flex gap-2">
-                    <button type="submit" class="btn btn-primary btn-sm flex-grow-1 btn-search-filter">Apply</button>
-                    @if($hasFilters)
-                        <a href="{{ route('attendance_logs.index') }}" class="btn btn-outline-secondary btn-sm">Clear</a>
-                    @endif
-                </div>
-            </form>
 
-            @if($hasFilters)
-                <div class="al-active-filters">
-                    @if(request('search'))
-                        <span class="badge text-bg-light border">Search: {{ request('search') }}</span>
-                    @endif
-                    @if(request('from') || request('to'))
-                        <span class="badge text-bg-light border">
-                            {{ request('from') ?: '…' }} → {{ request('to') ?: '…' }}
-                        </span>
-                    @endif
-                    @if(request('year'))
-                        <span class="badge text-bg-light border">{{ request('year') }}</span>
-                    @endif
-                    @if(request('homeroom_section'))
-                        <span class="badge text-bg-light border">{{ request('homeroom_section') }}</span>
-                    @endif
-                    @if(request('status'))
-                        <span class="badge text-bg-light border">{{ strtoupper(request('status')) }}</span>
-                    @endif
+                <div class="al-control-group">
+                    <span class="al-control-group__label">Status</span>
+                    <div class="al-pills" role="group" aria-label="Scan status">
+                        <a href="{{ $filterUrl([], ['status']) }}"
+                           class="al-pill {{ $currentStatus === '' ? 'is-active' : '' }}">All</a>
+                        <a href="{{ $filterUrl(['status' => 'IN']) }}"
+                           class="al-pill al-pill--in {{ $currentStatus === 'IN' ? 'is-active' : '' }}">IN</a>
+                        <a href="{{ $filterUrl(['status' => 'OUT']) }}"
+                           class="al-pill al-pill--out {{ $currentStatus === 'OUT' ? 'is-active' : '' }}">OUT</a>
+                    </div>
                 </div>
+            </div>
+
+            <details class="al-more-filters" {{ request()->hasAny(['from', 'to', 'year', 'homeroom_section']) ? 'open' : '' }}>
+                <summary>More filters</summary>
+                <div class="al-more-filters__grid">
+                    <div class="al-field">
+                        <label for="alFrom">From</label>
+                        <input type="date" id="alFrom" name="from" value="{{ request('from') }}">
+                    </div>
+                    <div class="al-field">
+                        <label for="alTo">To</label>
+                        <input type="date" id="alTo" name="to" value="{{ request('to') }}">
+                    </div>
+                    <div class="al-field">
+                        <label for="alYear">Grade</label>
+                        <select id="alYear" name="year">
+                            <option value="">All grades</option>
+                            @foreach($yearOptions as $year)
+                                <option value="{{ $year }}" @selected(request('year') === $year)>{{ $year }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="al-field">
+                        <label for="alSection">Section</label>
+                        <select id="alSection" name="homeroom_section">
+                            <option value="">All sections</option>
+                            @foreach($homeroomSections as $section)
+                                <option value="{{ $section }}" @selected(request('homeroom_section') === $section)>{{ $section }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="al-field al-field--actions">
+                        <button type="submit" class="al-btn al-btn--primary">Apply filters</button>
+                        @if($hasFilters)
+                            <a href="{{ route('attendance_logs.index') }}" class="al-btn al-btn--ghost">Clear all</a>
+                        @endif
+                    </div>
+                </div>
+            </details>
+
+            @if($currentStatus !== '')
+                <input type="hidden" name="status" value="{{ $currentStatus }}">
             @endif
-        </div>
-    </div>
+        </form>
 
-    <div class="card shadow-sm">
-        <div class="table-responsive">
-            <table class="table table-hover mb-0 al-table">
-                <thead class="table-light">
+        @if($hasFilters)
+            <div class="al-active-filters">
+                <span class="al-active-filters__label">Active:</span>
+                @if(request('search'))
+                    <a href="{{ $filterUrl([], ['search']) }}" class="al-tag">Search: {{ request('search') }} <span aria-hidden="true">×</span></a>
+                @endif
+                @if(request('from') || request('to'))
+                    <a href="{{ $filterUrl([], ['from', 'to']) }}" class="al-tag">
+                        {{ request('from') ?: '…' }} → {{ request('to') ?: '…' }} <span aria-hidden="true">×</span>
+                    </a>
+                @endif
+                @if(request('year'))
+                    <a href="{{ $filterUrl([], ['year']) }}" class="al-tag">Grade: {{ request('year') }} <span aria-hidden="true">×</span></a>
+                @endif
+                @if(request('homeroom_section'))
+                    <a href="{{ $filterUrl([], ['homeroom_section']) }}" class="al-tag">Section: {{ request('homeroom_section') }} <span aria-hidden="true">×</span></a>
+                @endif
+                @if($currentStatus !== '')
+                    <a href="{{ $filterUrl([], ['status']) }}" class="al-tag">Status: {{ $currentStatus }} <span aria-hidden="true">×</span></a>
+                @endif
+            </div>
+        @endif
+    </section>
+
+    <section class="al-table-card">
+        <div class="al-table-card__head">
+            <div>
+                <h2 class="al-table-card__title">Scan records</h2>
+                @if($logs->total() > 0)
+                    <p class="al-table-card__meta">
+                        Showing {{ number_format($logs->firstItem()) }}–{{ number_format($logs->lastItem()) }}
+                        of {{ number_format($logs->total()) }}
+                    </p>
+                @endif
+            </div>
+        </div>
+
+        <div class="al-table-wrap">
+            <table class="al-table">
+                <thead>
                     <tr>
                         <th>Student</th>
                         <th>Grade</th>
@@ -129,48 +210,72 @@
                         @php
                             $student = $log->student;
                             $status = strtoupper((string) $log->status);
+                            $initials = $student
+                                ? strtoupper(substr($student->firstname ?? '', 0, 1).substr($student->lastname ?? '', 0, 1))
+                                : '?';
+                            $scannedAt = $log->scanned_at?->timezone($tz);
                         @endphp
                         <tr>
                             <td>
-                                @if($student)
-                                    <div class="al-student-name">{{ $student->lastname }}, {{ $student->firstname }}</div>
-                                    @if($student->student_id)
-                                        <div class="al-student-meta">{{ $student->student_id }}</div>
-                                    @endif
-                                @else
-                                    <span class="text-muted">Unknown</span>
-                                @endif
+                                <div class="al-student">
+                                    <span class="al-student__avatar" aria-hidden="true">{{ $initials }}</span>
+                                    <div>
+                                        @if($student)
+                                            <div class="al-student__name">{{ $student->lastname }}, {{ $student->firstname }}</div>
+                                            @if($student->student_id)
+                                                <div class="al-student__meta">{{ $student->student_id }}</div>
+                                            @endif
+                                        @else
+                                            <span class="al-student__unknown">Unknown student</span>
+                                        @endif
+                                    </div>
+                                </div>
                             </td>
-                            <td>{{ $student?->year ?? '—' }}</td>
-                            <td>{{ $student?->section ?? '—' }}</td>
-                            <td>
+                            <td data-label="Grade">{{ $student?->year ?? '—' }}</td>
+                            <td data-label="Section">{{ $student?->section ?? '—' }}</td>
+                            <td data-label="Status">
                                 @if($status === 'IN')
-                                    <span class="badge badge-in">IN</span>
+                                    <span class="al-status al-status--in">IN</span>
                                 @elseif($status === 'OUT')
-                                    <span class="badge badge-out">OUT</span>
+                                    <span class="al-status al-status--out">OUT</span>
                                 @else
-                                    <span class="badge text-bg-secondary">{{ $status ?: '—' }}</span>
+                                    <span class="al-status al-status--muted">{{ $status ?: '—' }}</span>
                                 @endif
                             </td>
-                            <td class="al-time">
-                                {{ $log->scanned_at?->timezone(config('app.timezone'))->format('M j, Y g:i A') ?? '—' }}
+                            <td data-label="Scanned">
+                                @if($scannedAt)
+                                    <div class="al-time">
+                                        <span class="al-time__date">{{ $scannedAt->format('M j, Y') }}</span>
+                                        <span class="al-time__clock">{{ $scannedAt->format('g:i A') }}</span>
+                                    </div>
+                                @else
+                                    —
+                                @endif
                             </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center text-muted py-5">
-                                No attendance records match your filters.
+                            <td colspan="5">
+                                <div class="al-empty">
+                                    <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2"/><rect x="9" y="3" width="6" height="4" rx="1"/></svg>
+                                    <p class="al-empty__title">No records found</p>
+                                    <p class="al-empty__text">Try a different date range or clear your filters.</p>
+                                    @if($hasFilters)
+                                        <a href="{{ route('attendance_logs.index') }}" class="al-btn al-btn--ghost">Clear filters</a>
+                                    @endif
+                                </div>
                             </td>
                         </tr>
                     @endforelse
                 </tbody>
             </table>
         </div>
+
         @if($logs->hasPages())
-            <div class="card-footer bg-white border-top-0 py-3">
+            <div class="al-table-card__foot">
                 {{ $logs->withQueryString()->links('pagination::bootstrap-5') }}
             </div>
         @endif
-    </div>
+    </section>
 </div>
 @endsection

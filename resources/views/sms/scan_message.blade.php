@@ -6,7 +6,7 @@
 
     <div class="d-flex justify-content-between align-items-center mb-3">
 
-        <h3>Scan SMS Message</h3>
+        <h3>Gate Terminal SMS Message</h3>
 
         <a href="/sms-blast" class="btn btn-secondary">
             Back to SMS Blast

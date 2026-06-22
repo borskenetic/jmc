@@ -3,9 +3,9 @@
 @section('content')
 <div class="container py-4" style="max-width: 820px;">
     <div class="d-flex justify-content-between align-items-center mb-3 flex-wrap gap-2">
-        <h3 class="mb-0">Section picker (attendance scanner)</h3>
+        <h3 class="mb-0">Section picker (gate terminal)</h3>
         <a href="{{ route('attendance.scan') }}" class="btn btn-outline-secondary btn-sm" target="_blank" rel="noopener">
-            Open scanner
+            Open gate terminal
         </a>
     </div>
 
@@ -49,11 +49,11 @@
 
         <div class="card mb-4">
             <div class="card-header d-flex justify-content-between align-items-center flex-wrap gap-2">
-                <span class="fw-semibold">Scanner sections</span>
+                <span class="fw-semibold">Gate terminal sections</span>
                 <button type="button" class="btn btn-sm btn-outline-primary" id="addSectionRow">+ Add section</button>
             </div>
             <div class="card-body">
-                <p class="small text-muted">These buttons appear on the kiosk. Order is top to bottom, left to right on the scanner.</p>
+                <p class="small text-muted">These buttons appear on the kiosk. Order is top to bottom, left to right on the gate terminal.</p>
                 <div id="sectionRows" class="d-flex flex-column gap-2 mb-2">
                     @foreach(old('sections', $sections) as $index => $sectionName)
                         <div class="section-row input-group">
@@ -65,7 +65,7 @@
                         </div>
                     @endforeach
                 </div>
-                <p class="small text-muted mb-0">Keep at least one section. Long names wrap on the scanner buttons.</p>
+                <p class="small text-muted mb-0">Keep at least one section. Long names wrap on the gate terminal buttons.</p>
             </div>
         </div>
 

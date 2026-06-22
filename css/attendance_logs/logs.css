@@ -1,94 +1,672 @@
-.attendance-logs-page .al-summary {
+/* Attendance logs — gate terminal scan history */
+
+.attendance-logs-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.5rem 0 2.5rem;
+    font-family: var(--brand-font-family, 'Inter', system-ui, sans-serif);
+}
+
+/* ── Header ── */
+.al-header {
     display: flex;
     flex-wrap: wrap;
-    gap: 0.5rem;
-    margin-bottom: 1rem;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1rem 1.5rem;
+    margin-bottom: 1.25rem;
 }
 
-.attendance-logs-page .al-chip {
+.al-title {
+    margin: 0 0 0.25rem;
+    font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--brand-primary-darker, #125a82);
+}
+
+.al-subtitle {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #64748b;
+    max-width: 36rem;
+    line-height: 1.5;
+}
+
+.al-header__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+/* ── Buttons ── */
+.al-btn {
     display: inline-flex;
     align-items: center;
-    gap: 0.35rem;
-    padding: 0.35rem 0.75rem;
+    justify-content: center;
+    gap: 0.4rem;
+    padding: 0.5rem 0.9rem;
+    border-radius: 10px;
+    border: 1px solid transparent;
     font-size: 0.8125rem;
     font-weight: 600;
-    border-radius: 999px;
-    background: #fff;
-    border: 1px solid rgba(34, 51, 59, 0.12);
-    color: #374151;
-}
-
-.attendance-logs-page .al-chip strong {
-    font-weight: 700;
-    color: #22333b;
-}
-
-.attendance-logs-page .al-chip--in {
-    border-color: rgba(22, 163, 74, 0.35);
-    background: rgba(22, 163, 74, 0.08);
-    color: #166534;
-}
-
-.attendance-logs-page .al-chip--out {
-    border-color: rgba(220, 38, 38, 0.35);
-    background: rgba(220, 38, 38, 0.08);
-    color: #991b1b;
-}
-
-.attendance-logs-page .al-filter-card .form-label {
-    font-size: 0.75rem;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 0.03em;
-    color: #6b7280;
-    margin-bottom: 0.25rem;
-}
-
-.attendance-logs-page .al-table th {
-    font-size: 0.75rem;
-    text-transform: uppercase;
-    letter-spacing: 0.04em;
-    color: #6b7280;
-    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s, box-shadow 0.15s;
     white-space: nowrap;
 }
 
-.attendance-logs-page .al-table td {
-    vertical-align: middle;
+.al-btn svg {
+    width: 1rem;
+    height: 1rem;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 2;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    flex-shrink: 0;
+}
+
+.al-btn--primary {
+    background: var(--brand-button-bg, #1f7a1f);
+    border-color: var(--brand-button-bg, #1f7a1f);
+    color: var(--brand-button-text, #fff);
+}
+
+.al-btn--primary:hover {
+    background: var(--brand-button-hover-bg, #ffb845);
+    border-color: var(--brand-button-hover-bg, #ffb845);
+    color: var(--brand-button-hover-text, #22333b);
+}
+
+.al-btn--ghost {
+    background: #fff;
+    border-color: rgba(34, 51, 59, 0.14);
+    color: #334155;
+}
+
+.al-btn--ghost:hover {
+    background: #f8fafc;
+    border-color: rgba(34, 51, 59, 0.22);
+    color: #0f172a;
+}
+
+.al-btn--search {
+    min-width: 5.5rem;
+}
+
+.al-export-menu {
+    border-radius: 10px;
+    border: 1px solid rgba(34, 51, 59, 0.1);
+    box-shadow: 0 8px 24px rgba(15, 23, 42, 0.1);
+    padding: 0.35rem;
     font-size: 0.875rem;
 }
 
-.attendance-logs-page .al-student-name {
+.al-export-menu .dropdown-item {
+    border-radius: 6px;
+    padding: 0.45rem 0.75rem;
+}
+
+.al-export-menu .dropdown-item:hover {
+    background: rgba(41, 171, 226, 0.1);
+}
+
+/* ── Stats ── */
+.al-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.al-stat-card {
+    background: #fff;
+    border: 1px solid rgba(34, 51, 59, 0.08);
+    border-radius: 14px;
+    padding: 0.9rem 1rem;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.al-stat-card__label {
+    display: block;
+    font-size: 0.7rem;
     font-weight: 600;
-    color: #22333b;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #94a3b8;
+    margin-bottom: 0.35rem;
 }
 
-.attendance-logs-page .al-student-meta {
-    font-size: 0.75rem;
-    color: #6b7280;
-}
-
-.attendance-logs-page .badge-in {
-    background-color: #16a34a;
-}
-
-.attendance-logs-page .badge-out {
-    background-color: #dc2626;
-}
-
-.attendance-logs-page .al-time {
-    white-space: nowrap;
+.al-stat-card__value {
+    display: block;
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: #0f172a;
     font-variant-numeric: tabular-nums;
 }
 
-.attendance-logs-page .al-active-filters {
+.al-stat-card--in {
+    border-color: rgba(22, 163, 74, 0.2);
+    background: linear-gradient(180deg, rgba(22, 163, 74, 0.06) 0%, #fff 100%);
+}
+
+.al-stat-card--in .al-stat-card__value { color: #15803d; }
+
+.al-stat-card--out {
+    border-color: rgba(220, 38, 38, 0.2);
+    background: linear-gradient(180deg, rgba(220, 38, 38, 0.05) 0%, #fff 100%);
+}
+
+.al-stat-card--out .al-stat-card__value { color: #b91c1c; }
+
+.al-stat-card--today {
+    border-color: rgba(41, 171, 226, 0.25);
+    background: linear-gradient(180deg, rgba(41, 171, 226, 0.07) 0%, #fff 100%);
+}
+
+.al-stat-card--today .al-stat-card__value {
+    color: var(--brand-primary-darker, #125a82);
+}
+
+/* ── Controls ── */
+.al-controls {
+    background: #fff;
+    border: 1px solid rgba(34, 51, 59, 0.08);
+    border-radius: 16px;
+    padding: 1rem 1.1rem;
+    margin-bottom: 1.25rem;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.al-search-row {
+    display: flex;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+}
+
+.al-search {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0 0.85rem;
+    min-height: 2.75rem;
+    background: #f8fafc;
+    border: 1px solid rgba(34, 51, 59, 0.1);
+    border-radius: 12px;
+    transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+
+.al-search:focus-within {
+    background: #fff;
+    border-color: var(--brand-primary, #29abe2);
+    box-shadow: 0 0 0 3px rgba(41, 171, 226, 0.15);
+}
+
+.al-search svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    flex-shrink: 0;
+    fill: none;
+    stroke: #94a3b8;
+    stroke-width: 2;
+    stroke-linecap: round;
+}
+
+.al-search input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    font-size: 0.9rem;
+    color: #0f172a;
+    outline: none;
+    min-width: 0;
+}
+
+.al-search input::placeholder {
+    color: #94a3b8;
+}
+
+.al-control-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1.5rem;
+    margin-bottom: 0.25rem;
+}
+
+.al-control-group__label {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #94a3b8;
+    margin-bottom: 0.45rem;
+}
+
+.al-pills {
     display: flex;
     flex-wrap: wrap;
     gap: 0.35rem;
-    margin-top: 0.75rem;
 }
 
-.attendance-logs-page .al-active-filters .badge {
-    font-weight: 500;
+.al-pill {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid rgba(34, 51, 59, 0.12);
+    background: #f8fafc;
+    color: #475569;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.al-pill:hover {
+    background: #fff;
+    border-color: rgba(41, 171, 226, 0.35);
+    color: var(--brand-primary-darker, #125a82);
+}
+
+.al-pill.is-active {
+    background: var(--brand-primary-darker, #125a82);
+    border-color: var(--brand-primary-darker, #125a82);
+    color: #fff;
+}
+
+.al-pill--in.is-active {
+    background: #16a34a;
+    border-color: #16a34a;
+}
+
+.al-pill--out.is-active {
+    background: #dc2626;
+    border-color: #dc2626;
+}
+
+.al-more-filters {
+    margin-top: 0.85rem;
+    border-top: 1px solid rgba(34, 51, 59, 0.08);
+    padding-top: 0.75rem;
+}
+
+.al-more-filters summary {
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--brand-primary-darker, #125a82);
+    list-style: none;
+    user-select: none;
+}
+
+.al-more-filters summary::-webkit-details-marker {
+    display: none;
+}
+
+.al-more-filters summary::before {
+    content: '▸';
+    display: inline-block;
+    margin-right: 0.4rem;
+    transition: transform 0.15s;
+}
+
+.al-more-filters[open] summary::before {
+    transform: rotate(90deg);
+}
+
+.al-more-filters__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.85rem;
+    align-items: end;
+}
+
+.al-field label {
+    display: block;
     font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 0.3rem;
+}
+
+.al-field input,
+.al-field select {
+    width: 100%;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid rgba(34, 51, 59, 0.14);
+    border-radius: 10px;
+    font-size: 0.875rem;
+    color: #0f172a;
+    background: #fff;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+.al-field input:focus,
+.al-field select:focus {
+    outline: none;
+    border-color: var(--brand-primary, #29abe2);
+    box-shadow: 0 0 0 3px rgba(41, 171, 226, 0.12);
+}
+
+.al-field--actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    align-items: center;
+}
+
+.al-active-filters {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.4rem;
+    margin-top: 0.85rem;
+    padding-top: 0.85rem;
+    border-top: 1px dashed rgba(34, 51, 59, 0.1);
+}
+
+.al-active-filters__label {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+}
+
+.al-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 999px;
+    background: rgba(41, 171, 226, 0.1);
+    border: 1px solid rgba(41, 171, 226, 0.25);
+    color: var(--brand-primary-darker, #125a82);
+    font-size: 0.75rem;
+    font-weight: 600;
+    text-decoration: none;
+    transition: background 0.15s;
+}
+
+.al-tag:hover {
+    background: rgba(41, 171, 226, 0.18);
+    color: var(--brand-primary-darker, #125a82);
+}
+
+.al-tag span {
+    opacity: 0.7;
+    font-size: 0.9rem;
+    line-height: 1;
+}
+
+/* ── Table card ── */
+.al-table-card {
+    background: #fff;
+    border: 1px solid rgba(34, 51, 59, 0.08);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+}
+
+.al-table-card__head {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    padding: 1rem 1.15rem;
+    border-bottom: 1px solid rgba(34, 51, 59, 0.06);
+    background: linear-gradient(180deg, #fafbfc 0%, #fff 100%);
+}
+
+.al-table-card__title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.al-table-card__meta {
+    margin: 0.15rem 0 0;
+    font-size: 0.78rem;
+    color: #94a3b8;
+}
+
+.al-table-wrap {
+    overflow-x: auto;
+}
+
+.al-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.al-table thead th {
+    padding: 0.65rem 1.15rem;
+    text-align: left;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #94a3b8;
+    background: #f8fafc;
+    border-bottom: 1px solid rgba(34, 51, 59, 0.06);
+    white-space: nowrap;
+}
+
+.al-table tbody td {
+    padding: 0.75rem 1.15rem;
+    vertical-align: middle;
+    border-bottom: 1px solid rgba(34, 51, 59, 0.05);
+    color: #334155;
+}
+
+.al-table tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.al-table tbody tr:hover td {
+    background: rgba(41, 171, 226, 0.03);
+}
+
+.al-student {
+    display: flex;
+    align-items: center;
+    gap: 0.7rem;
+    min-width: 12rem;
+}
+
+.al-student__avatar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.25rem;
+    height: 2.25rem;
+    border-radius: 10px;
+    background: linear-gradient(135deg, var(--brand-primary, #29abe2), var(--brand-primary-darker, #125a82));
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 700;
+    flex-shrink: 0;
+}
+
+.al-student__name {
+    font-weight: 600;
+    color: #0f172a;
+    line-height: 1.3;
+}
+
+.al-student__meta {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-top: 0.1rem;
+}
+
+.al-student__unknown {
+    color: #94a3b8;
+    font-style: italic;
+}
+
+.al-status {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+}
+
+.al-status--in {
+    background: rgba(22, 163, 74, 0.12);
+    color: #15803d;
+}
+
+.al-status--out {
+    background: rgba(220, 38, 38, 0.1);
+    color: #b91c1c;
+}
+
+.al-status--muted {
+    background: #f1f5f9;
+    color: #64748b;
+}
+
+.al-time {
+    display: flex;
+    flex-direction: column;
+    gap: 0.1rem;
+    font-variant-numeric: tabular-nums;
+    white-space: nowrap;
+}
+
+.al-time__date {
+    font-weight: 600;
+    color: #0f172a;
+    font-size: 0.8125rem;
+}
+
+.al-time__clock {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+.al-empty {
+    text-align: center;
+    padding: 2.5rem 1.5rem;
+}
+
+.al-empty svg {
+    width: 2.5rem;
+    height: 2.5rem;
+    margin: 0 auto 0.75rem;
+    fill: none;
+    stroke: #cbd5e1;
+    stroke-width: 1.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+
+.al-empty__title {
+    margin: 0 0 0.35rem;
+    font-weight: 700;
+    color: #334155;
+}
+
+.al-empty__text {
+    margin: 0 0 1rem;
+    font-size: 0.875rem;
+    color: #94a3b8;
+}
+
+.al-table-card__foot {
+    padding: 0.75rem 1.15rem;
+    border-top: 1px solid rgba(34, 51, 59, 0.06);
+    background: #fafbfc;
+}
+
+.al-table-card__foot .pagination {
+    margin: 0;
+    justify-content: center;
+}
+
+/* ── Responsive ── */
+@media (max-width: 900px) {
+    .al-stats {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 640px) {
+    .al-search-row {
+        flex-direction: column;
+    }
+
+    .al-btn--search {
+        width: 100%;
+    }
+
+    .al-stats {
+        grid-template-columns: 1fr 1fr;
+    }
+
+    .al-table thead {
+        display: none;
+    }
+
+    .al-table tbody tr {
+        display: block;
+        padding: 0.85rem 1rem;
+        border-bottom: 1px solid rgba(34, 51, 59, 0.08);
+    }
+
+    .al-table tbody tr:hover td {
+        background: transparent;
+    }
+
+    .al-table tbody td {
+        display: flex;
+        justify-content: space-between;
+        align-items: baseline;
+        gap: 1rem;
+        padding: 0.3rem 0;
+        border: none;
+    }
+
+    .al-table tbody td::before {
+        content: attr(data-label);
+        font-size: 0.68rem;
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        color: #94a3b8;
+        flex-shrink: 0;
+    }
+
+    .al-table tbody td:first-child {
+        display: block;
+        padding-bottom: 0.5rem;
+        margin-bottom: 0.35rem;
+        border-bottom: 1px dashed rgba(34, 51, 59, 0.08);
+    }
+
+    .al-table tbody td:first-child::before {
+        display: none;
+    }
+
+    .al-table tbody td[colspan] {
+        display: block;
+    }
+
+    .al-table tbody td[colspan]::before {
+        display: none;
+    }
 }
