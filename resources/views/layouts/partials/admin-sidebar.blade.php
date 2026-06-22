@@ -3,17 +3,18 @@
     $user = Auth::user();
 
     $attendanceChildren = [
-        ['label' => 'SF2',             'route' => 'sf2.index',                         'patterns' => ['sf2.*'],                                 'icon' => 'book'],
-        ['label' => 'Scanner',         'route' => 'attendance.scan',                   'patterns' => ['attendance.scan', 'attendance.process'], 'icon' => 'scan', 'target' => '_blank'],
+        ['label' => 'Scanner',      'route' => 'attendance.scan',        'patterns' => ['attendance.scan', 'attendance.process'], 'icon' => 'scan', 'target' => '_blank'],
     ];
     if (config('face.enabled')) {
         $attendanceChildren[] = ['label' => 'Face Scanner', 'route' => 'attendance.face', 'patterns' => ['attendance.face', 'attendance.face.identify'], 'icon' => 'scan', 'target' => '_blank'];
     }
-    $attendanceChildren = array_merge($attendanceChildren, [
-        ['label' => 'Attendance Logs', 'route' => 'attendance_logs.index',             'patterns' => ['attendance_logs.index'],                 'icon' => 'clock'],
-        ['label' => 'Reports',         'route' => 'attendance_logs.reports.dashboard', 'patterns' => ['attendance_logs.reports.*'],             'icon' => 'chart'],
-        ['label' => 'Manage Video',    'route' => 'attendance.changeVideo',            'patterns' => ['attendance.changeVideo', 'attendance.uploadVideo'], 'icon' => 'settings'],
-    ]);
+    $attendanceChildren[] = ['label' => 'Manage Video', 'route' => 'attendance.changeVideo', 'patterns' => ['attendance.changeVideo', 'attendance.uploadVideo'], 'icon' => 'settings'];
+
+    $reportsChildren = [
+        ['label' => 'School Form 2 (SF2)', 'route' => 'sf2.index',                    'patterns' => ['sf2.*'], 'icon' => 'book'],
+        ['label' => 'Attendance Logs',     'route' => 'attendance_logs.index',        'patterns' => ['attendance_logs.index', 'attendance_logs.export.*'], 'icon' => 'clock'],
+        ['label' => 'Patron Reports',      'route' => 'attendance_logs.reports.hub',  'patterns' => ['attendance_logs.reports.*'], 'icon' => 'chart'],
+    ];
 
     $navLinks = [
         [
@@ -25,8 +26,14 @@
         [
             'label'    => 'Attendance',
             'icon'     => 'calendar-check',
-            'patterns' => ['sf2.*', 'attendance.*', 'attendance_logs.*'],
+            'patterns' => ['attendance.scan', 'attendance.face', 'attendance.face.identify', 'attendance.process', 'attendance.section', 'attendance.changeVideo', 'attendance.uploadVideo'],
             'children' => $attendanceChildren,
+        ],
+        [
+            'label'    => 'Reports',
+            'icon'     => 'chart',
+            'patterns' => ['sf2.*', 'attendance_logs.*'],
+            'children' => $reportsChildren,
         ],
         [
             'label'    => 'Data',

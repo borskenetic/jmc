@@ -91,21 +91,9 @@ body.scan-kiosk-page {
       color: #ffffff;
     }
 
-    .marquee-powered {
-      display: inline-block;
-      margin-left: clamp(600px, 100vw, 900px);
-      opacity: 0;
-      animation: scan-powered-show 15s linear infinite;
-    }
-
     @keyframes scan-marquee-scroll {
       0% { transform: translateX(0%); }
       100% { transform: translateX(-100%); }
-    }
-
-    @keyframes scan-powered-show {
-      0%, 35% { opacity: 0; }
-      45%, 100% { opacity: 1; }
     }
 
     .footer1 .footer-title{
@@ -712,10 +700,6 @@ body.scan-kiosk-page {
   animation: fadeInUp 0.3s ease;
 }
 
-.scan-name-display--example {
-  opacity: 0.75;
-}
-
 .scan-name-welcome {
   font-size: clamp(0.85rem, 1.5vw, 1.1rem);
   color: rgba(255, 255, 255, 0.75);
@@ -774,11 +758,14 @@ body.scan-kiosk-page {
   }
 }
 
-/* Portrait: full-width horizontal banner */
+/* Portrait: full-width horizontal banner (only when a scan is shown) */
 @media (orientation: portrait) {
   .sidebar-divider {
     width: 100%;
     min-height: 0;
+  }
+  .sidebar-divider:has(.scan-name-display[hidden]) {
+    display: none;
   }
   .sidebar > .scan-result-box {
     display: none;
@@ -840,10 +827,10 @@ body.scan-kiosk-page {
     justify-content: center;
     min-height: 0;
   }
-  .sidebar-divider {
+  .sidebar-divider:has(.scan-name-display:not([hidden])) {
     min-height: clamp(120px, 9vh, 180px);
   }
-  .scan-name-display {
+  .scan-name-display:not([hidden]) {
     padding: 20px 28px;
   }
   .right-content {

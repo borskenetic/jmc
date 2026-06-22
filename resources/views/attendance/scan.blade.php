@@ -36,11 +36,11 @@
   </div>
   
   <div class="sidebar-divider" id="scanDivider">
-    <div class="scan-name-display scan-name-display--example" id="scanNameDisplay">
+    <div class="scan-name-display" id="scanNameDisplay" hidden>
       <div class="scan-name-welcome">Welcome,</div>
-      <div class="scan-name-text" id="scanNameText">Juan Dela Cruz</div>
-      <div class="scan-status-badge" id="scanStatusBadge">IN</div>
-      <div class="scan-name-timestamp" id="scanNameTimestamp">Example Name</div>
+      <div class="scan-name-text" id="scanNameText"></div>
+      <div class="scan-status-badge" id="scanStatusBadge"></div>
+      <div class="scan-name-timestamp" id="scanNameTimestamp"></div>
     </div>
   </div>
 
@@ -62,8 +62,7 @@
     <div class="footer-logo">
       <div class="marquee-container">
         <div class="marquee">
-          <span>Welcome to {{ config('app.name') }}</span>
-          <span class="marquee-powered">Powered By: {{ config('app.name_short') }}</span>
+          <span>{{ config('app.name') }}</span>
         </div>
  
       </div>
@@ -135,8 +134,7 @@
       badgeEl.textContent = status;
       badgeEl.className = 'scan-status-badge' + (isOut ? ' scan-status-out' : '');
       tsEl.textContent = timestamp || '';
-      display.classList.remove('scan-name-display--example');
-      display.hidden = false;
+      display.removeAttribute('hidden');
     }
 
     function hideDividerName() {
