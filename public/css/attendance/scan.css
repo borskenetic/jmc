@@ -14,17 +14,31 @@ body.scan-kiosk-page {
       padding: 15px clamp(14px, 2vw, 28px);
       display: flex;
       align-items: center;
+      justify-content: flex-start;
+      gap: clamp(10px, 2vw, 20px);
       border-bottom: 3px solid var(--brand-primary, #29abe2);
       box-shadow: 0 4px 18px rgba(18, 90, 130, 0.08);
       z-index: 2;
     }
 
     .header .logo-title {
-      display: grid;
-      grid-template-columns: auto 1fr auto;
+      display: flex;
       align-items: center;
       gap: clamp(10px, 2vw, 24px);
-      width: 100%;
+      min-width: 0;
+    }
+
+    .header > a {
+      margin-left: auto;
+      flex-shrink: 0;
+      color: var(--brand-primary-darker, #125a82);
+      font-weight: 600;
+      font-size: 0.875rem;
+      text-decoration: none;
+    }
+
+    .header > a:hover {
+      color: var(--brand-primary, #29abe2);
     }
 
     .header img {
@@ -33,12 +47,10 @@ body.scan-kiosk-page {
       max-width: min(360px, 70vw);
       margin-left: 0;
       object-fit: contain;
-      grid-column: 2;
-      justify-self: center;
+      justify-self: start;
     }
 
     .header .system-title {
-      justify-self: right;
       min-width: 0;
       font-size: clamp(16px, 2.2vw, 30px);
       font-weight: 700;
@@ -545,14 +557,14 @@ body.scan-kiosk-page {
         overflow: auto;
     }
     .header .logo-title {
-        grid-template-columns: auto 1fr;
+        flex-wrap: wrap;
     }
     .header img{
         width: clamp(150px, 42vw, 220px);
         height: auto;
     }
     .header{
-        text-align: center;
+        text-align: left;
     }
     .header .system-title{
         justify-self: end;
@@ -585,7 +597,7 @@ body.scan-kiosk-page {
         display: flex;
     }
     .header{
-        text-align: center;
+        text-align: left;
     }
     .header img{
         width: clamp(120px, 46vw, 170px);

@@ -15,7 +15,7 @@
       <img src="{{ asset('images/pantasLogo.png') }}" alt="Logo">
     </div>
     @if(config('face.enabled'))
-      <a href="{{ route('attendance.face') }}" class="small text-white text-decoration-none ms-3">Face gate terminal</a>
+      <a href="{{ route('attendance.face') }}" class="scan-header-link ms-3">Face gate terminal</a>
     @endif
   </div>
 </header>

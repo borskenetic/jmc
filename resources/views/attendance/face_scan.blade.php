@@ -16,7 +16,7 @@
       <img src="{{ asset('images/pantasLogo.png') }}" alt="Logo">
       <div class="system-title">Face Gate Terminal</div>
     </div>
-    <a href="{{ route('attendance.scan') }}" class="small text-white text-decoration-none ms-3">Gate terminal</a>
+    <a href="{{ route('attendance.scan') }}" class="scan-header-link ms-3">Gate terminal</a>
   </div>
 </header>
 
