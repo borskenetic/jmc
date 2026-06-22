@@ -14,6 +14,7 @@
   const earlyOutAlarmTime = document.getElementById('earlyOutAlarmTime');
   const sectionModal = document.getElementById('sectionModal');
   const feedbackModal = document.getElementById('feedbackModal');
+  const scanAlarmSound = document.getElementById('scanAlarmSound');
 
   let selectedStudent = null;
   let currentStudentId = null;
@@ -44,6 +45,17 @@
     clearDisplayTimer = setTimeout(clearDisplay, delayMs);
   }
 
+  function playAlarmSound() {
+    if (scanAlarmSound) {
+      scanAlarmSound.currentTime = 0;
+      scanAlarmSound.play().catch(() => {});
+      return;
+    }
+    if (!cfg.alarmSoundUrl) return;
+    const audio = new Audio(cfg.alarmSoundUrl);
+    audio.play().catch(() => {});
+  }
+
   function hideEarlyOutAlarm() {
     earlyOutAlarm?.setAttribute('hidden', '');
     scanSidebar?.classList.remove('sidebar--alarm');
@@ -71,7 +83,23 @@
     sidebar?.appendChild(div);
     earlyOutAlarm.hidden = false;
     scanSidebar?.classList.add('sidebar--alarm');
+    playAlarmSound();
     scheduleClear(8000);
+    setHint('Look at the camera when ready.');
+  }
+
+  function showUnknownScanAlarm(message) {
+    const div = document.createElement('div');
+    div.classList.add('name-box', 'scan-error-box');
+    div.innerHTML = `
+      <div class="student-name">${message}</div>
+      <div class="label">Not recognized</div>
+      <div class="status-button status-blocked">UNKNOWN</div>
+    `;
+    sidebar?.appendChild(div);
+    scanSidebar?.classList.add('sidebar--alarm');
+    playAlarmSound();
+    scheduleClear(4000);
     setHint('Look at the camera when ready.');
   }
 
@@ -120,15 +148,7 @@
     }
 
     if (data.type === 'error') {
-      const div = document.createElement('div');
-      div.classList.add('name-box');
-      div.innerHTML = `
-        <div class="student-name">${data.message}</div>
-        <div class="label">Error</div>
-      `;
-      sidebar?.appendChild(div);
-      scheduleClear(2500);
-      setHint('Look at the camera when ready.');
+      showUnknownScanAlarm(data.message || 'Face not recognized. Please enroll or try again.');
       return;
     }
 

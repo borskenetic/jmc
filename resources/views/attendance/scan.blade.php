@@ -84,6 +84,8 @@
   </div>
 </div>
 
+<audio id="scanAlarmSound" src="{{ asset('sounds/alarm.wav') }}" preload="auto"></audio>
+
 <div id="feedbackModal" class="section-modal" aria-hidden="true">
   <div class="modal-content feedback-card">
     <h2>How was your library experience?</h2>
@@ -108,6 +110,7 @@
   const earlyOutAlarmMessage = document.getElementById('earlyOutAlarmMessage');
   const earlyOutAlarmTime = document.getElementById('earlyOutAlarmTime');
   const scanSidebar = document.getElementById('scanSidebar');
+  const scanAlarmSound = document.getElementById('scanAlarmSound');
   const sectionModal = document.getElementById('sectionModal');
   let selectedStudent = null;
   let currentStudentId = null;
@@ -151,26 +154,10 @@
       currentStudentId = null;
     }
 
-    function playAlarmTone() {
-      try {
-        const ctx = new (window.AudioContext || window.webkitAudioContext)();
-        const playBeep = (start, freq) => {
-          const osc = ctx.createOscillator();
-          const gain = ctx.createGain();
-          osc.type = 'square';
-          osc.frequency.value = freq;
-          gain.gain.value = 0.15;
-          osc.connect(gain);
-          gain.connect(ctx.destination);
-          osc.start(start);
-          osc.stop(start + 0.2);
-        };
-        playBeep(ctx.currentTime, 880);
-        playBeep(ctx.currentTime + 0.25, 660);
-        playBeep(ctx.currentTime + 0.5, 880);
-      } catch (e) {
-        /* audio optional */
-      }
+    function playAlarmSound() {
+      if (!scanAlarmSound) return;
+      scanAlarmSound.currentTime = 0;
+      scanAlarmSound.play().catch(() => {});
     }
 
     function showEarlyOutAlarm(data) {
@@ -199,8 +186,22 @@
 
       earlyOutAlarm.hidden = false;
       scanSidebar?.classList.add('sidebar--alarm');
-      playAlarmTone();
+      playAlarmSound();
       scheduleClear(8000);
+    }
+
+    function showUnknownScanAlarm(message) {
+      const div = document.createElement('div');
+      div.classList.add('name-box', 'scan-error-box');
+      div.innerHTML = `
+        <div class="student-name">${message}</div>
+        <div class="label">Not recognized</div>
+        <div class="status-button status-blocked">UNKNOWN</div>
+      `;
+      sidebar.appendChild(div);
+      scanSidebar?.classList.add('sidebar--alarm');
+      playAlarmSound();
+      scheduleClear(4000);
     }
 
     function hideEarlyOutAlarm() {
@@ -333,14 +334,7 @@
               }
             }
           } else if (data.type === 'error') {
-            const div = document.createElement('div');
-            div.classList.add('name-box', 'scan-error-box');
-            div.innerHTML = `
-              <div class="student-name">${data.message}</div>
-              <div class="label">Error</div>
-            `;
-            sidebar.appendChild(div);
-            scheduleClear(2000);
+            showUnknownScanAlarm(data.message || 'RFID or QR code not recognized.');
           }
 
           input.value = '';

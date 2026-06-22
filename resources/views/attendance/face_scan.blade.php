@@ -59,6 +59,8 @@
   'attendanceSections' => $attendanceSections ?? [],
 ])
 
+<audio id="scanAlarmSound" src="{{ asset('sounds/alarm.wav') }}" preload="auto"></audio>
+
 <script>
   window.FACE_KIOSK_CONFIG = {
     identifyUrl: @json(route('attendance.face.identify')),
@@ -70,6 +72,7 @@
     logoutFeedbackEnabled: @json($logoutFeedbackEnabled ?? true),
     sectionPickerEnabled: @json($sectionPickerEnabled ?? true),
     hasAttendanceSections: @json(count($attendanceSections ?? []) > 0),
+    alarmSoundUrl: @json(asset('sounds/alarm.wav')),
   };
 </script>
 <script src="https://cdn.jsdelivr.net/npm/@vladmandic/face-api@1.7.14/dist/face-api.js"></script>
