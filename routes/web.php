@@ -18,7 +18,8 @@ use App\Http\Controllers\SmsController;
 use App\Http\Controllers\StudentController;
 use App\Http\Controllers\SchoolSetupController;
 use App\Http\Controllers\Sf2ReportController;
-use App\Http\Controllers\UserController;
+use App\Http\Controllers\VisitorLogController;
+use App\Http\Controllers\VisitorRegistrationController;
 use Illuminate\Support\Facades\Route;
 
 // Public
@@ -36,6 +37,10 @@ Route::get('/register', [PendingStudentController::class, 'create'])->name('patr
 Route::post('/register', [PendingStudentController::class, 'store'])->name('pending.store');
 Route::post('/register-employee', [PendingEmployeeController::class, 'store'])->name('pendingEmployee.store');
 
+Route::get('/register-visitor', [VisitorRegistrationController::class, 'create'])->name('visitors.register');
+Route::post('/register-visitor', [VisitorRegistrationController::class, 'store'])->name('visitors.store');
+Route::get('/visitor-pass/{visitor}', [VisitorRegistrationController::class, 'pass'])->name('visitors.pass');
+
 Route::get('/index', fn () => redirect()->route('home'));
 
 // Attendance kiosk (public)
@@ -44,6 +49,7 @@ Route::get('/attendance/face', [AttendanceController::class, 'showFaceScanner'])
 Route::post('/attendance', [AttendanceController::class, 'scan'])->name('attendance.process');
 Route::post('/attendance/face', [AttendanceController::class, 'identifyByFace'])->name('attendance.face.identify');
 Route::post('/attendance/section', [AttendanceController::class, 'processSection'])->name('attendance.section');
+Route::post('/attendance/visitor', [AttendanceController::class, 'processVisitor'])->name('attendance.visitor');
 Route::post('/attendance-feedback', [FeedController::class, 'store'])->name('attendance.feedback.store');
 
 // Admin + Staff
@@ -98,6 +104,8 @@ Route::middleware(['auth', 'can:isAdminOrStaff'])->group(function () {
     Route::get('/attendance-logs/reports/export', [AttendanceLogController::class, 'reportsExportCsv'])->name('attendance_logs.reports.export');
     Route::get('/attendance-logs/export/excel', [AttendanceLogController::class, 'exportExcel'])->name('attendance_logs.export.excel');
     Route::get('/attendance-logs/export/pdf', [AttendanceLogController::class, 'exportPdf'])->name('attendance_logs.export.pdf');
+
+    Route::get('/visitor-logs', [VisitorLogController::class, 'index'])->name('visitor_logs.index');
 
     Route::prefix('sf2')->name('sf2.')->group(function () {
         Route::get('/', [Sf2ReportController::class, 'index'])->name('index');

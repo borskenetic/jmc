@@ -31,13 +31,14 @@
                 </div>
 
                 <div class="nav-dropdown">
-                    <button type="button" class="nav-dropdown-button {{ $dropActive(['sf2.*', 'attendance_logs.*']) }}">
+                    <button type="button" class="nav-dropdown-button {{ $dropActive(['sf2.*', 'attendance_logs.*', 'visitor_logs.*']) }}">
                         Reports
                     </button>
                     <div class="nav-dropdown-content">
                         <a href="{{ route('sf2.index') }}" class="{{ $linkActive(['sf2.*']) }}">School Form 2 (SF2)</a>
                         <a href="{{ route('attendance_logs.index') }}" class="{{ $linkActive(['attendance_logs.index', 'attendance_logs.export.*']) }}">Attendance Logs</a>
                         <a href="{{ route('attendance_logs.reports.hub') }}" class="{{ $linkActive(['attendance_logs.reports.*']) }}">Patron Reports</a>
+                        <a href="{{ route('visitor_logs.index') }}" class="{{ $linkActive(['visitor_logs.*']) }}">Visitor Logs</a>
                     </div>
                 </div>
 

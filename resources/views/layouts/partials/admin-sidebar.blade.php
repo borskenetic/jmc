@@ -14,6 +14,7 @@
         ['label' => 'School Form 2 (SF2)', 'route' => 'sf2.index',                    'patterns' => ['sf2.*'], 'icon' => 'book'],
         ['label' => 'Attendance Logs',     'route' => 'attendance_logs.index',        'patterns' => ['attendance_logs.index', 'attendance_logs.export.*'], 'icon' => 'clock'],
         ['label' => 'Patron Reports',      'route' => 'attendance_logs.reports.hub',  'patterns' => ['attendance_logs.reports.*'], 'icon' => 'chart'],
+        ['label' => 'Visitor Logs',        'route' => 'visitor_logs.index',           'patterns' => ['visitor_logs.*'],              'icon' => 'clock'],
     ];
 
     $navLinks = [
@@ -32,7 +33,7 @@
         [
             'label'    => 'Reports',
             'icon'     => 'chart',
-            'patterns' => ['sf2.*', 'attendance_logs.*'],
+            'patterns' => ['sf2.*', 'attendance_logs.*', 'visitor_logs.*'],
             'children' => $reportsChildren,
         ],
         [

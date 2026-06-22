@@ -6,6 +6,8 @@ use App\Console\Commands\NormalizeStudentNames;
 use App\Models\AttendanceLog;
 use App\Models\Setting;
 use App\Models\Student;
+use App\Models\Visitor;
+use App\Models\VisitorLog;
 use App\Services\AttendanceSessionService;
 use App\Services\FaceMatchService;
 use App\Services\StudentDeparturePolicy;
@@ -142,14 +144,20 @@ class AttendanceController extends Controller
 
         $student = $this->resolveStudent($request->qrcode);
 
-        if (! $student) {
-            return response()->json([
-                'type' => 'error',
-                'message' => 'RFID or QR code not recognized.',
-            ]);
+        if ($student) {
+            return response()->json($this->buildScanResponse($student));
         }
 
-        return response()->json($this->buildScanResponse($student));
+        $visitor = $this->resolveVisitor($request->qrcode);
+
+        if ($visitor) {
+            return response()->json($this->buildVisitorScanResponse($visitor));
+        }
+
+        return response()->json([
+            'type' => 'error',
+            'message' => 'ID not recognized. Students and employees use their school ID. Visitors must register first.',
+        ]);
     }
 
     public function identifyByFace(Request $request, FaceMatchService $faces)
@@ -271,6 +279,72 @@ class AttendanceController extends Controller
             'scanned_at' => $log->scanned_at->format('Y-m-d h:i:s A'),
             'logout_feedback_enabled' => $this->effectiveLogoutFeedbackEnabled(),
         ]);
+    }
+
+    public function processVisitor(Request $request)
+    {
+        $request->validate([
+            'visitor_id' => 'required|integer|exists:visitors,id',
+        ]);
+
+        $visitor = Visitor::findOrFail($request->visitor_id);
+        $sessions = app(AttendanceSessionService::class);
+        $sessions->closeStaleOpenInForVisitor($visitor);
+
+        $lastLog = VisitorLog::where('visitor_id', $visitor->id)
+            ->orderByDesc('scanned_at')
+            ->orderByDesc('id')
+            ->first();
+
+        $newStatus = ($lastLog && $sessions->isInStatus($lastLog->status)) ? 'OUT' : 'IN';
+
+        $log = VisitorLog::create([
+            'visitor_id' => $visitor->id,
+            'status' => $newStatus,
+            'scanned_at' => now(),
+        ]);
+
+        return response()->json([
+            'status' => $newStatus,
+            'scanned_at' => $log->scanned_at->format('Y-m-d h:i:s A'),
+        ]);
+    }
+
+    /** @return array<string, mixed> */
+    protected function buildVisitorScanResponse(Visitor $visitor): array
+    {
+        app(AttendanceSessionService::class)->closeStaleOpenInForVisitor($visitor);
+
+        $sessions = app(AttendanceSessionService::class);
+        $lastLog = VisitorLog::where('visitor_id', $visitor->id)
+            ->orderByDesc('scanned_at')
+            ->orderByDesc('id')
+            ->first();
+
+        $nextStatus = ($lastLog && $sessions->isInStatus($lastLog->status)) ? 'OUT' : 'IN';
+
+        return [
+            'type' => 'visitor',
+            'next_status' => $nextStatus,
+            'visitor_id' => $visitor->id,
+            'visitor' => [
+                'id' => $visitor->id,
+                'firstname' => $visitor->firstname,
+                'lastname' => $visitor->lastname,
+                'organization' => $visitor->organization,
+            ],
+        ];
+    }
+
+    private function resolveVisitor(string $raw): ?Visitor
+    {
+        $token = trim(str_replace("\r", '', $raw));
+
+        if ($token === '') {
+            return null;
+        }
+
+        return Visitor::where('qrcode', $token)->first();
     }
 
     public function showChangeVideo()

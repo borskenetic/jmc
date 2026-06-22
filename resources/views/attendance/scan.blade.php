@@ -112,7 +112,9 @@
   const scanAlarmSound = document.getElementById('scanAlarmSound');
   const sectionModal = document.getElementById('sectionModal');
   let selectedStudent = null;
+  let selectedVisitor = null;
   let currentStudentId = null;
+  let currentVisitorId = null;
   let clearDisplayTimer = null;
 
   document.addEventListener('DOMContentLoaded', function () {
@@ -149,7 +151,9 @@
       hideDividerName();
       hideEarlyOutAlarm();
       selectedStudent = null;
+      selectedVisitor = null;
       currentStudentId = null;
+      currentVisitorId = null;
     }
 
     function playAlarmSound() {
@@ -228,6 +232,33 @@
       }, 500);
     }
 
+    function processVisitorLog(visitorId) {
+      return fetch("{{ route('attendance.visitor') }}", {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRF-TOKEN': '{{ csrf_token() }}',
+          'Accept': 'application/json',
+        },
+        body: JSON.stringify({ visitor_id: visitorId }),
+      });
+    }
+
+    function showVisitorScanResult(visitor, status, timestamp) {
+      const org = visitor.organization ? ` · ${visitor.organization}` : '';
+      const div = document.createElement('div');
+      div.classList.add('name-box', 'scan-result-box', 'scan-result-box--visitor');
+      div.innerHTML = `
+        <div class="student-name">${visitor.firstname} ${visitor.lastname}</div>
+        <div class="label">Visitor${org}</div>
+        <div class="status-button status-visitor">${status}</div>
+        <div class="timestamp">${timestamp}</div>
+      `;
+      sidebar.appendChild(div);
+      showDividerName(`${visitor.firstname} ${visitor.lastname}`, status, timestamp, status === 'OUT');
+      scheduleClear(status === 'OUT' ? 2000 : 3000);
+    }
+
     function profileUrl(path) {
       return path ? "{{ asset('') }}" + path.replace(/^\//, '') : "{{ asset('images/2x2_undifined_gender.jpg') }}";
     }
@@ -253,6 +284,20 @@
 
           if (data.type === 'early_out_blocked') {
             showEarlyOutAlarm(data);
+            input.value = '';
+            return;
+          }
+
+          if (data.type === 'visitor') {
+            selectedVisitor = data.visitor;
+            currentVisitorId = data.visitor_id;
+            profileImg.src = "{{ asset('images/2x2_undifined_gender.jpg') }}";
+
+            processVisitorLog(currentVisitorId)
+              .then(res => res.json())
+              .then(response => {
+                showVisitorScanResult(selectedVisitor, response.status, response.scanned_at);
+              });
             input.value = '';
             return;
           }
@@ -332,7 +377,7 @@
               }
             }
           } else if (data.type === 'error') {
-            showUnknownScanAlarm(data.message || 'RFID or QR code not recognized.');
+            showUnknownScanAlarm(data.message || 'ID not recognized. Visitors must register first.');
           }
 
           input.value = '';

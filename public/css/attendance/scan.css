@@ -690,6 +690,15 @@ body.scan-kiosk-page {
   font-size: 1.1rem;
 }
 
+.status-button.status-visitor {
+  background: #f59e0b;
+  color: #fff;
+}
+
+.scan-result-box--visitor .label {
+  color: #fbbf24;
+}
+
 @keyframes alarm-shake {
   0%, 100% { transform: translateX(0); }
   25% { transform: translateX(-6px); }

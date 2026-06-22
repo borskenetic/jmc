@@ -40,6 +40,11 @@
                 <button type="button" class="reg-tabs__btn" id="btnEmployee" role="tab" aria-selected="false">Employee</button>
             </div>
 
+            <p class="text-center small text-muted mb-3">
+                Visiting for the day?
+                <a href="{{ route('visitors.register') }}">Register as a visitor</a> to get a QR pass for the gate terminal.
+            </p>
+
             <form id="studentForm" class="reg-form" method="POST" action="{{ route('pending.store') }}" enctype="multipart/form-data">
                 @csrf
 

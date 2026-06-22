@@ -1,0 +1,325 @@
+/* Visitor logs — mirrors attendance logs styling */
+
+.visitor-logs-page {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0.5rem 0 2.5rem;
+    font-family: var(--brand-font-family, 'Inter', system-ui, sans-serif);
+}
+
+.vl-header {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.vl-title {
+    margin: 0 0 0.25rem;
+    font-size: clamp(1.35rem, 2.5vw, 1.75rem);
+    font-weight: 700;
+    color: var(--brand-primary-darker, #125a82);
+}
+
+.vl-subtitle {
+    margin: 0;
+    font-size: 0.9rem;
+    color: #64748b;
+}
+
+.vl-header__actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+}
+
+.vl-btn {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.5rem 0.9rem;
+    border-radius: 10px;
+    border: 1px solid transparent;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.vl-btn--primary {
+    background: var(--brand-button-bg, #1f7a1f);
+    color: #fff;
+}
+
+.vl-btn--ghost {
+    background: #fff;
+    border-color: rgba(34, 51, 59, 0.14);
+    color: #334155;
+}
+
+.vl-stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 0.75rem;
+    margin-bottom: 1.25rem;
+}
+
+.vl-stat-card {
+    background: #fff;
+    border: 1px solid rgba(34, 51, 59, 0.08);
+    border-radius: 14px;
+    padding: 0.9rem 1rem;
+}
+
+.vl-stat-card__label {
+    display: block;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #94a3b8;
+}
+
+.vl-stat-card__value {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: #0f172a;
+}
+
+.vl-stat-card--in { border-color: rgba(22, 163, 74, 0.2); }
+.vl-stat-card--in .vl-stat-card__value { color: #15803d; }
+.vl-stat-card--out { border-color: rgba(220, 38, 38, 0.2); }
+.vl-stat-card--out .vl-stat-card__value { color: #b91c1c; }
+.vl-stat-card--today { border-color: rgba(245, 158, 11, 0.3); }
+.vl-stat-card--today .vl-stat-card__value { color: #b45309; }
+
+.vl-controls {
+    background: #fff;
+    border: 1px solid rgba(34, 51, 59, 0.08);
+    border-radius: 16px;
+    padding: 1rem;
+    margin-bottom: 1.25rem;
+}
+
+.vl-search-row {
+    display: flex;
+    gap: 0.6rem;
+    margin-bottom: 1rem;
+}
+
+.vl-search {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    padding: 0 0.85rem;
+    min-height: 2.75rem;
+    background: #f8fafc;
+    border: 1px solid rgba(34, 51, 59, 0.1);
+    border-radius: 12px;
+}
+
+.vl-search svg {
+    width: 1.1rem;
+    height: 1.1rem;
+    fill: none;
+    stroke: #94a3b8;
+    stroke-width: 2;
+}
+
+.vl-search input {
+    flex: 1;
+    border: none;
+    background: transparent;
+    outline: none;
+    font-size: 0.9rem;
+}
+
+.vl-control-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1rem 1.5rem;
+}
+
+.vl-control-group__label {
+    display: block;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.07em;
+    color: #94a3b8;
+    margin-bottom: 0.45rem;
+}
+
+.vl-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+}
+
+.vl-pill {
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    border: 1px solid rgba(34, 51, 59, 0.12);
+    background: #f8fafc;
+    color: #475569;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    text-decoration: none;
+}
+
+.vl-pill.is-active {
+    background: var(--brand-primary-darker, #125a82);
+    border-color: var(--brand-primary-darker, #125a82);
+    color: #fff;
+}
+
+.vl-pill--in.is-active { background: #16a34a; border-color: #16a34a; }
+.vl-pill--out.is-active { background: #dc2626; border-color: #dc2626; }
+
+.vl-more-filters {
+    margin-top: 0.85rem;
+    padding-top: 0.75rem;
+    border-top: 1px solid rgba(34, 51, 59, 0.08);
+}
+
+.vl-more-filters summary {
+    cursor: pointer;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--brand-primary-darker, #125a82);
+    list-style: none;
+}
+
+.vl-more-filters__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 0.75rem;
+    margin-top: 0.85rem;
+    align-items: end;
+}
+
+.vl-field label {
+    display: block;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #64748b;
+    margin-bottom: 0.3rem;
+}
+
+.vl-field input {
+    width: 100%;
+    padding: 0.5rem 0.65rem;
+    border: 1px solid rgba(34, 51, 59, 0.14);
+    border-radius: 10px;
+    font-size: 0.875rem;
+}
+
+.vl-field--actions {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.vl-table-card {
+    background: #fff;
+    border: 1px solid rgba(34, 51, 59, 0.08);
+    border-radius: 16px;
+    overflow: hidden;
+}
+
+.vl-table-card__head {
+    padding: 1rem 1.15rem;
+    border-bottom: 1px solid rgba(34, 51, 59, 0.06);
+}
+
+.vl-table-card__title {
+    margin: 0;
+    font-size: 0.95rem;
+    font-weight: 700;
+}
+
+.vl-table-card__meta {
+    margin: 0.15rem 0 0;
+    font-size: 0.78rem;
+    color: #94a3b8;
+}
+
+.vl-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 0.875rem;
+}
+
+.vl-table thead th {
+    padding: 0.65rem 1.15rem;
+    text-align: left;
+    font-size: 0.68rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: #94a3b8;
+    background: #f8fafc;
+}
+
+.vl-table tbody td {
+    padding: 0.75rem 1.15rem;
+    border-bottom: 1px solid rgba(34, 51, 59, 0.05);
+    vertical-align: middle;
+}
+
+.vl-visitor-name {
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.vl-visitor-meta {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+.vl-code {
+    font-size: 0.8rem;
+    color: var(--brand-primary-darker, #125a82);
+}
+
+.vl-status {
+    display: inline-flex;
+    padding: 0.2rem 0.65rem;
+    border-radius: 999px;
+    font-size: 0.7rem;
+    font-weight: 700;
+}
+
+.vl-status--in { background: rgba(22, 163, 74, 0.12); color: #15803d; }
+.vl-status--out { background: rgba(220, 38, 38, 0.1); color: #b91c1c; }
+
+.vl-time__date {
+    display: block;
+    font-weight: 600;
+    font-size: 0.8125rem;
+}
+
+.vl-time__clock {
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+.vl-empty {
+    text-align: center;
+    padding: 2rem;
+    color: #94a3b8;
+}
+
+.vl-table-card__foot {
+    padding: 0.75rem 1.15rem;
+    border-top: 1px solid rgba(34, 51, 59, 0.06);
+}
+
+@media (max-width: 900px) {
+    .vl-stats { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (max-width: 640px) {
+    .vl-search-row { flex-direction: column; }
+    .vl-stats { grid-template-columns: 1fr 1fr; }
+}

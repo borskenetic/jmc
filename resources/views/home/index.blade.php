@@ -57,6 +57,13 @@
                     </p>
                 </div>
 
+                <div class="faq-item">
+                    <p><strong>Visiting the campus?</strong></p>
+                    <p class="mb-0 mt-2">
+                        <a href="{{ route('visitors.register') }}" class="faq-toggle">Register as a visitor and get your QR pass</a>
+                    </p>
+                </div>
+
                 @guest
                 <div class="faq-item">
                     <p><strong>Ready to register?</strong></p>
