@@ -101,8 +101,8 @@
 </div>
 
 <script>
-  const LOGOUT_FEEDBACK_ENABLED = @json($logoutFeedbackEnabled ?? true);
-  const SECTION_PICKER_ENABLED = @json($sectionPickerEnabled ?? true);
+  const LOGOUT_FEEDBACK_ENABLED = @json($logoutFeedbackEnabled ?? false);
+  const SECTION_PICKER_ENABLED = @json($sectionPickerEnabled ?? false);
   const HAS_ATTENDANCE_SECTIONS = @json(count($attendanceSections ?? []) > 0);
   const EARLY_DEPARTURE_ENABLED = @json($earlyDepartureEnabled ?? true);
   const feedbackModal = document.getElementById('feedbackModal');

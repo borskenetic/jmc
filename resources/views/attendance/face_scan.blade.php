@@ -69,8 +69,8 @@
     csrf: @json(csrf_token()),
     assetBase: @json(asset('')),
     defaultProfile: @json(asset('images/2x2_undifined_gender.jpg')),
-    logoutFeedbackEnabled: @json($logoutFeedbackEnabled ?? true),
-    sectionPickerEnabled: @json($sectionPickerEnabled ?? true),
+    logoutFeedbackEnabled: @json($logoutFeedbackEnabled ?? false),
+    sectionPickerEnabled: @json($sectionPickerEnabled ?? false),
     hasAttendanceSections: @json(count($attendanceSections ?? []) > 0),
     alarmSoundUrl: @json(asset('sounds/alarm.wav')),
   };

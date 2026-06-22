@@ -32,7 +32,7 @@ class Setting extends Model
         $value = static::where('key', self::KEY_LOGOUT_FEEDBACK)->value('value');
 
         if ($value === null) {
-            return true;
+            return false;
         }
 
         return in_array(strtolower((string) $value), ['1', 'true', 'yes', 'on'], true);
@@ -51,7 +51,7 @@ class Setting extends Model
         $value = static::where('key', self::KEY_SECTION_PICKER)->value('value');
 
         if ($value === null) {
-            return true;
+            return false;
         }
 
         return in_array(strtolower((string) $value), ['1', 'true', 'yes', 'on'], true);

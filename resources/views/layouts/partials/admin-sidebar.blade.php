@@ -13,8 +13,6 @@
         ['label' => 'Attendance Logs', 'route' => 'attendance_logs.index',             'patterns' => ['attendance_logs.index'],                 'icon' => 'clock'],
         ['label' => 'Reports',         'route' => 'attendance_logs.reports.dashboard', 'patterns' => ['attendance_logs.reports.*'],             'icon' => 'chart'],
         ['label' => 'Manage Video',    'route' => 'attendance.changeVideo',            'patterns' => ['attendance.changeVideo', 'attendance.uploadVideo'], 'icon' => 'settings'],
-        ['label' => 'Section Picker',  'route' => 'attendance.section.settings',       'patterns' => ['attendance.section.settings*'],          'icon' => 'settings'],
-        ['label' => 'Logout Feedback', 'route' => 'attendance.feedback.settings',      'patterns' => ['attendance.feedback.settings*'],         'icon' => 'message'],
     ]);
 
     $navLinks = [
