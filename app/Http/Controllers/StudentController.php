@@ -218,7 +218,12 @@ class StudentController extends Controller
             'emergency_relationship' => 'nullable|string|max:255',
             'emergency_number' => 'nullable|string|max:20',
             'emergency_address' => 'nullable|string',
+            'rfid' => 'nullable|string|max:255|unique:students,rfid',
         ]);
+
+        if (array_key_exists('rfid', $validated) && $validated['rfid'] === '') {
+            $validated['rfid'] = null;
+        }
 
         // Handle profile picture upload
         if ($request->hasFile('profile_picture')) {

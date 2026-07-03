@@ -628,7 +628,8 @@
     }
 }
 
-/* Student edit page */
+/* Student register / edit forms */
+.student-form-page,
 .student-edit-page {
     max-width: 1100px;
     margin: 0 auto;
@@ -736,6 +737,7 @@
     margin: 0.35rem 0 0;
 }
 
+.student-form-page .form-label,
 .student-edit-page .form-label {
     font-weight: 600;
     font-size: 0.8125rem;
@@ -743,6 +745,8 @@
     margin-bottom: 0.3rem;
 }
 
+.student-form-page .form-control,
+.student-form-page .form-select,
 .student-edit-page .form-control,
 .student-edit-page .form-select {
     border-radius: 8px;
@@ -750,12 +754,15 @@
     border-color: rgba(34, 51, 59, 0.15);
 }
 
+.student-form-page .form-control:focus,
+.student-form-page .form-select:focus,
 .student-edit-page .form-control:focus,
 .student-edit-page .form-select:focus {
     border-color: var(--brand-button-bg, #1f7a1f);
     box-shadow: 0 0 0 3px rgba(31, 122, 31, 0.12);
 }
 
+.student-form-page .font-monospace,
 .student-edit-page .font-monospace {
     font-family: ui-monospace, 'Cascadia Code', monospace;
     font-size: 0.8rem;
@@ -807,6 +814,7 @@
     background: #fff;
 }
 
+.student-form-page .signature-wrap,
 .student-edit-page .signature-wrap {
     background: #fafafa;
     border: 1px dashed #d1d5db;
@@ -814,6 +822,7 @@
     padding: 0.65rem;
 }
 
+.student-form-page .signature-wrap canvas,
 .student-edit-page .signature-wrap canvas {
     display: block;
     width: 100%;
