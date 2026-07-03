@@ -28,6 +28,7 @@ class Employee extends Model
         'sss_number',
         'hdmf_number',
         'qrcode',
+        'rfid',
         'emergency_contact_name',
         'emergency_contact_relationship',
         'address',

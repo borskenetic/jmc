@@ -1,6 +1,6 @@
 # Migrations
 
-**21 migrations** — full JMC attendance schema on `php artisan migrate` or `migrate:fresh`.
+**22 migrations** — full JMC attendance schema on `php artisan migrate` or `migrate:fresh`.
 
 | # | File | Tables |
 |---|------|--------|
@@ -14,7 +14,7 @@
 | 000008 | `create_program_years_and_courses_tables` | `program_years`, `program_courses` |
 | 000009 | `create_students_table` | `students` (incl. RFID, face, section, sex) |
 | 000010 | `create_pending_students_table` | `pending_students` |
-| 000011 | `create_employees_table` | `employees` |
+| 000011 | `create_employees_table` | `employees` (incl. RFID) |
 | 000012 | `create_pending_employees_table` | `pending_employees` |
 | 000013 | `create_attendance_logs_table` | `attendance_logs` |
 | 000014 | `create_attendance_feedback_table` | `attendance_feedback` |
@@ -25,6 +25,7 @@
 | 000019 | `create_visitors_table` | `visitors` |
 | 000020 | `create_visitor_logs_table` | `visitor_logs` |
 | 000021 | `create_files_table` | `files` |
+| 000022 | `add_rfid_to_employees_table` | `employees.rfid` (existing DBs) |
 
 Legacy library tables (books, ebooks, rooms, prospectus) are **not** included.
 

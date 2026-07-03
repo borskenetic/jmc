@@ -27,6 +27,7 @@ return new class extends Migration
             $table->string('sss_number')->nullable();
             $table->string('hdmf_number')->nullable();
             $table->string('qrcode')->nullable()->unique();
+            $table->string('rfid')->nullable()->unique();
             $table->string('formal_picture')->nullable();
             $table->string('emergency_contact_name')->nullable();
             $table->string('emergency_contact_relationship')->nullable();

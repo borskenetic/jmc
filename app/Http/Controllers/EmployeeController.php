@@ -157,9 +157,14 @@ class EmployeeController extends Controller
             'emergency_contact_relationship' => 'nullable|string|max:255',
             'address' => 'nullable|string',
             'emergency_contact_number' => 'nullable|string|max:255',
+            'rfid' => 'nullable|string|max:255|unique:employees,rfid',
             'employee_signature' => 'nullable|string',
             'formal_picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
+
+        if (array_key_exists('rfid', $validated) && $validated['rfid'] === '') {
+            $validated['rfid'] = null;
+        }
     
         // Force Faculty role
         $validated['role_id'] = 2;
@@ -232,9 +237,14 @@ class EmployeeController extends Controller
             'emergency_contact_relationship' => 'nullable|string|max:255',
             'address' => 'nullable|string',
             'emergency_contact_number' => 'nullable|string|max:255',
+            'rfid' => 'nullable|string|max:255|unique:employees,rfid,'.$employee->id,
             'employee_signature' => 'nullable|string',
             'formal_picture' => 'nullable|image|mimes:jpg,jpeg,png|max:2048',
         ]);
+
+        if (array_key_exists('rfid', $validated) && $validated['rfid'] === '') {
+            $validated['rfid'] = null;
+        }
     
         // 🔒 Force role to Faculty
         $validated['role_id'] = 2;
@@ -302,8 +312,10 @@ class EmployeeController extends Controller
                 base_path('images/signatures/' . $sigName),
                 base64_decode($contents)
             );
-    
+
             $validated['employee_signature'] = 'images/signatures/' . $sigName;
+        } else {
+            unset($validated['employee_signature']);
         }
     
         /*
