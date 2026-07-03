@@ -24,6 +24,7 @@ class Student extends Model
         'face_descriptor',
         'face_enrolled_at',
         'qrcode',
+        'rfid',
         'birth_date',
         'blood_type',
         'emergency_person',

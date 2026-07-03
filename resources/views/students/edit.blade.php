@@ -24,7 +24,7 @@
     <div class="card shadow-sm">
         <div class="card-header text-center py-3">
             <h4 class="mb-1">Edit Student</h4>
-            <p class="page-intro">QR code is assigned by the system and cannot be changed.</p>
+            <p class="page-intro">QR code is system-assigned. RFID is used at the gate scanner.</p>
         </div>
 
         <div class="card-body p-4">
@@ -60,6 +60,13 @@
                         <div class="col-md-6">
                             <label for="qrcode" class="form-label">QR code</label>
                             <input type="text" id="qrcode" class="form-control bg-light" value="{{ $student->qrcode ?? '—' }}" readonly>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="rfid" class="form-label">RFID tag</label>
+                            <input type="text" name="rfid" id="rfid" class="form-control @error('rfid') is-invalid @enderror"
+                                   value="{{ old('rfid', $student->rfid) }}" placeholder="Scan or type RFID for gate attendance"
+                                   autocomplete="off">
+                            @error('rfid')<div class="invalid-feedback">{{ $message }}</div>@enderror
                         </div>
                         <div class="col-md-4">
                             <label for="firstname" class="form-label">First name <span class="text-danger">*</span></label>

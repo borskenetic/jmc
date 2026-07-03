@@ -14,7 +14,9 @@ use App\Models\StudentEditRequest;
 use App\Console\Commands\NormalizeStudentNames;
 use App\Exports\StudentsImportTemplateExport;
 use App\Exports\StudentsListExport;
+use App\Exports\StudentsRfidImportTemplateExport;
 use App\Imports\StudentsImport;
+use App\Imports\StudentsRfidImport;
 use App\Services\BulkIdCardService;
 use App\Support\PatronOptions;
 use App\Support\SchoolSetupOptions;
@@ -44,7 +46,10 @@ class StudentController extends Controller
             ->paginate(15)
             ->appends($request->all());
 
-        return view('students.students', compact('students', 'programs'));
+        $totalStudents = Student::count();
+        $rfidAssigned = Student::whereNotNull('rfid')->where('rfid', '!=', '')->count();
+
+        return view('students.students', compact('students', 'programs', 'totalStudents', 'rfidAssigned'));
     }
 
     private function filteredStudentsQuery(Request $request)
@@ -58,6 +63,7 @@ class StudentController extends Controller
                     ->orWhere('firstname', 'like', "%{$search}%")
                     ->orWhere('course', 'like', "%{$search}%")
                     ->orWhere('qrcode', 'like', "%{$search}%")
+                    ->orWhere('rfid', 'like', "%{$search}%")
                     ->orWhere('student_id', 'like', "%{$search}%");
             });
         }
@@ -98,6 +104,43 @@ class StudentController extends Controller
         Excel::import(new StudentsImport, $request->file('file'));
 
         return back()->with('success', 'Students imported successfully.');
+    }
+
+    public function downloadRfidImportTemplate()
+    {
+        return Excel::download(
+            new StudentsRfidImportTemplateExport,
+            'students_rfid_template.xlsx'
+        );
+    }
+
+    public function importRfid(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|file|mimes:csv,xlsx,xls|max:10240',
+        ]);
+
+        $import = new StudentsRfidImport;
+        Excel::import($import, $request->file('file'));
+
+        $message = "RFID import complete: {$import->updated} updated";
+        if ($import->skipped > 0) {
+            $message .= ", {$import->skipped} skipped";
+        }
+        if ($import->notFound > 0) {
+            $message .= ", {$import->notFound} student ID(s) not found";
+        }
+        $message .= '.';
+
+        if ($import->updated === 0 && $import->errors !== []) {
+            return back()
+                ->with('error', $message.' '.implode(' ', array_slice($import->errors, 0, 3)))
+                ->with('rfid_import_errors', $import->errors);
+        }
+
+        return back()
+            ->with('success', $message)
+            ->with('rfid_import_errors', $import->errors);
     }
 
     public function bulkDownloadIds(Request $request, BulkIdCardService $bulkIds)
@@ -266,6 +309,7 @@ class StudentController extends Controller
             'emergency_relationship' => 'nullable|string|max:255',
             'emergency_number' => 'nullable|string|max:20',
             'emergency_address' => 'nullable|string',
+            'rfid' => 'nullable|string|max:255|unique:students,rfid,'.$id,
     
             'profile_picture' => 'nullable|image|mimes:jpeg,png,jpg|max:2048',
             'student_signature' => 'nullable|string',

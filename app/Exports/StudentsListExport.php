@@ -23,6 +23,7 @@ class StudentsListExport implements FromCollection, WithHeadings
             $s->course ?? '',
             $s->year ?? '',
             $s->qrcode ?? '',
+            $s->rfid ?? '',
             $s->mobile_number ?? '',
         ]);
     }
@@ -38,6 +39,7 @@ class StudentsListExport implements FromCollection, WithHeadings
             'course',
             'year',
             'qrcode',
+            'rfid',
             'mobile_number',
         ];
     }

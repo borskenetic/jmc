@@ -377,7 +377,12 @@ class AttendanceController extends Controller
     private function resolveStudent(string $raw): ?Student
     {
         $token = trim(str_replace("\r", '', $raw));
-        $student = Student::where('qrcode', $token)->first();
+
+        $student = Student::where('rfid', $token)->first();
+
+        if (! $student) {
+            $student = Student::where('qrcode', $token)->first();
+        }
 
         $parsed = $this->parseQr($raw);
 
