@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\EducationalLevel;
+use App\Support\ProfilePicture;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
 
@@ -67,5 +69,13 @@ class Student extends Model
     public function hasFaceEnrolled(): bool
     {
         return is_array($this->face_descriptor) && count($this->face_descriptor) === (int) config('face.descriptor_length', 128);
+    }
+
+    protected function profilePicture(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => ProfilePicture::relativePath($value),
+            set: fn (?string $value) => $value,
+        );
     }
 }

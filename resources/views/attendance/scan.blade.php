@@ -62,7 +62,7 @@
     <div class="footer-logo">
       <div class="marquee-container">
         <div class="marquee">
-          <span>{{ config('app.name') }}</span>
+          <span>Welcome to {{ config('app.name') }}</span>
         </div>
  
       </div>
@@ -260,7 +260,12 @@
     }
 
     function profileUrl(path) {
-      return path ? "{{ asset('') }}" + path.replace(/^\//, '') : "{{ asset('images/2x2_undifined_gender.jpg') }}";
+      if (!path) return "{{ asset('images/2x2_undifined_gender.jpg') }}";
+      path = path.replace(/^\//, '');
+      if (!path.startsWith('images/')) {
+        path = 'images/profile_pictures/' + path;
+      }
+      return "{{ asset('') }}" + path;
     }
 
     input.addEventListener('keypress', function (e) {

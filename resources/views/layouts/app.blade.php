@@ -18,7 +18,7 @@
         $usesAdminShell = auth()->check() && auth()->user()->can('isAdminOrStaff');
     @endphp
 </head>
-<body class="@yield('body_class') {{ $usesAdminShell ? 'admin-shell-body' : '' }}" style="background: var(--brand-page-bg, #f5f7fa);">
+<body class="@yield('body_class') {{ $usesAdminShell ? 'admin-shell-body' : '' }}" style="background: var(--brand-page-bg, #4b0082);">
     @if($usesAdminShell)
         @include('layouts.partials.admin-sidebar')
     @else

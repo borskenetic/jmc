@@ -494,7 +494,7 @@
     border: 1px solid rgba(17, 24, 39, 0.1);
     border-radius: 6px;
     background: #ffffff;
-    color: #6b7280;
+    color: #4b0082;
     cursor: pointer;
     box-shadow: 0 1px 6px rgba(17, 24, 39, 0.1);
     /* Slides with the sidebar during collapse/expand */
@@ -538,7 +538,7 @@
     display: flex;
     flex-direction: column;
     padding: 16px 10px 12px;
-    background: #0373e3;
+    background: #4b0082;
     border-right: 1px solid rgba(17, 24, 39, 0.08);
     box-shadow: 4px 0 20px rgba(17, 24, 39, 0.05);
     color: #111827;
@@ -735,13 +735,13 @@
 }
 
 .admin-sidebar-link:hover {
-    background: white transparentize(0.9);
-    color: #ffffff;
+    background: rgba(255, 255, 255, 0.984);
+    color: #000;
 }
 
 .admin-sidebar-link.active {
-    background: rgba(255, 194, 51, 0.984) transparentize(0.1) ;
-    color: #ffffff;
+    background: rgba(255, 255, 255, 0.984) ;
+    color: #000;
     font-weight: 600;
 }
 
@@ -835,9 +835,9 @@
 }
 
 .admin-sidebar-user button:hover {
-    background: #fee2e2;
+    background: #ffffff;
     border-color: rgba(239, 68, 68, 0.2);
-    color: #dc2626;
+    color: #fff;
 }
 
 .admin-sidebar-logout-btn {
@@ -965,11 +965,11 @@
 }
 
 .admin-sidebar-link.admin-sidebar-link--child:hover {
-    color: var(--brand-primary, #29abe2);
+    color: var(--brand-primary, #000);
 }
 
 .admin-sidebar-link.admin-sidebar-link--child.active {
-    color: var(--brand-primary-darker, #125a82);
+    color: var(--brand-primary-darker, #000);
     font-weight: 600;
 }
 
@@ -1018,7 +1018,7 @@
         width: 16px;
         height: 2px;
         border-radius: 99px;
-        background: #374151;
+        background: #4b0082;
         transition: background-color 0.15s ease;
     }
 

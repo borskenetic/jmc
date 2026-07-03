@@ -3,6 +3,8 @@
 namespace App\Models;
 
 use App\Enums\EducationalLevel;
+use App\Support\ProfilePicture;
+use Illuminate\Database\Eloquent\Casts\Attribute;
 use Illuminate\Database\Eloquent\Model;
 
 class PendingStudent extends Model
@@ -39,5 +41,13 @@ class PendingStudent extends Model
     public function role()
     {
         return $this->belongsTo(Role::class);
+    }
+
+    protected function profilePicture(): Attribute
+    {
+        return Attribute::make(
+            get: fn (?string $value) => ProfilePicture::relativePath($value),
+            set: fn (?string $value) => $value,
+        );
     }
 }

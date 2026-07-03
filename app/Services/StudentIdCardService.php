@@ -208,11 +208,16 @@ class StudentIdCardService
             return;
         }
 
-        if (! $student->profile_picture || ! file_exists(base_path($student->profile_picture))) {
+        if (! $student->profile_picture) {
             return;
         }
 
-        $profile = Image::make(base_path($student->profile_picture))->resize(
+        $profilePath = \App\Support\ProfilePicture::absolutePath($student->profile_picture);
+        if ($profilePath === null || ! file_exists($profilePath)) {
+            return;
+        }
+
+        $profile = Image::make($profilePath)->resize(
             (int) ($photo['width'] ?? 290),
             (int) ($photo['height'] ?? 290)
         );

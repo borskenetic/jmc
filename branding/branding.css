@@ -6,18 +6,18 @@
     --brand-font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
 
     /* ACD palette */
-    --brand-primary: #29abe2;
-    --brand-primary-dark: #1a8fc4;
-    --brand-primary-darker: #125a82;
+    --brand-primary: #4b0082;
+    --brand-primary-dark: #4b0082;
+    --brand-primary-darker: #4b0082;
     --brand-primary-rgb: 41, 171, 226;
 
     /* Page */
-    --brand-page-bg: #f4f9fc;
+    --brand-page-bg: #ffffff;
 
     /* Navigation (links on light background) */
     --brand-nav-link: var(--brand-primary);
     --brand-nav-link-hover: var(--brand-primary-dark);
-    --brand-nav-dropdown-hover-bg: #e3f4fc;
+    --brand-nav-dropdown-hover-bg: #ffffff;
     --brand-nav-dropdown-hover-text: var(--brand-primary-darker);
     --brand-nav-link-active: var(--brand-primary);
 
@@ -43,7 +43,7 @@
     --brand-button-hover-text: #ffffff;
 
     /* Secondary / warning */
-    --brand-warning-bg: #ffb845;
+    --brand-warning-bg: #ffffff;
     --brand-warning-text: var(--brand-primary-darker);
 
     /* Footer */

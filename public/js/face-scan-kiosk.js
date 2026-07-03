@@ -24,7 +24,12 @@
   let lastSentAt = 0;
 
   function profileUrl(path) {
-    return path ? cfg.assetBase + path.replace(/^\//, '') : cfg.defaultProfile;
+    if (!path) return cfg.defaultProfile;
+    path = path.replace(/^\//, '');
+    if (!path.startsWith('images/')) {
+      path = 'images/profile_pictures/' + path;
+    }
+    return cfg.assetBase + path;
   }
 
   function setHint(msg) {
