@@ -1,7 +1,7 @@
 @extends('layouts.app')
 
 @section('styles')
-    <link rel="stylesheet" href="{{ \App\Support\VersionedAsset::url('css/books/index.css') }}">
+    <link rel="stylesheet" href="{{ \App\Support\VersionedAsset::url('css/home/faq.css') }}">
 @endsection
 
 @section('banner')

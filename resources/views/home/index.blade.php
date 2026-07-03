@@ -1,21 +1,5 @@
 @extends('layouts.main')
 
-@section('styles')
-    <link rel="stylesheet" href="{{ asset('css/books/index.css') }}">
-    <style>
-        .faq-header h2,
-        .faq-subtitle,
-        .faq-item {
-            font-family: var(--brand-font-family, 'Inter', sans-serif);
-        }
-        .faq-header h2 {
-            font-size: 2rem;
-            font-weight: 700;
-            letter-spacing: -0.02em;
-        }
-    </style>
-@endsection
-
 @section('content')
     <section class="faq-section">
         <div class="faq-container">
@@ -45,21 +29,21 @@
 
                 <div class="faq-item">
                     <p><strong>Who can register?</strong></p>
-                    <p class="mb-0 mt-2 text-muted">
+                    <p class="text-muted">
                         Students and employees can register online. After submitting the form, staff will review and approve your account.
                     </p>
                 </div>
 
                 <div class="faq-item">
                     <p><strong>Where do I sign in for attendance?</strong></p>
-                    <p class="mb-0 mt-2">
+                    <p>
                         <a href="{{ route('attendance.scan') }}" class="faq-toggle">Open the gate terminal</a>
                     </p>
                 </div>
 
                 <div class="faq-item">
                     <p><strong>Visiting the campus?</strong></p>
-                    <p class="mb-0 mt-2">
+                    <p>
                         <a href="{{ route('visitors.register') }}" class="faq-toggle">Register as a visitor and get your QR pass</a>
                     </p>
                 </div>
@@ -67,7 +51,7 @@
                 @guest
                 <div class="faq-item">
                     <p><strong>Ready to register?</strong></p>
-                    <p class="mb-0 mt-2">
+                    <p>
                         <a href="{{ route('patron.register') }}" class="faq-toggle">Student or employee registration</a>
                     </p>
                 </div>
@@ -78,10 +62,7 @@
 @endsection
 
 @section('footer')
-    <footer>
-        <div class="a51-footer">
-            <h4 style="color: white; font-size:15px">Pantas &copy; {{ date('Y') }}. All Rights Reserved.</h4>
-        </div>
+    <footer class="home-footer">
+        <p>Pantas &copy; {{ date('Y') }}. All Rights Reserved.</p>
     </footer>
 @endsection
-

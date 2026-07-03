@@ -1,0 +1,114 @@
+/* Home / FAQ page */
+
+.faq-section {
+    padding: 2rem 0 3rem;
+}
+
+.faq-container {
+    max-width: 720px;
+    margin: 0 auto;
+}
+
+.faq-header {
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.faq-header h2 {
+    font-family: var(--brand-font-family, 'Inter', sans-serif);
+    font-size: 1.75rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    color: var(--brand-card-header-bg, #22333b);
+    margin: 0;
+}
+
+.faq-subtitle {
+    font-family: var(--brand-font-family, 'Inter', sans-serif);
+    font-size: 1.125rem;
+    font-weight: 600;
+    color: #374151;
+    margin: 0 0 1rem;
+    text-align: left;
+}
+
+.faq-list {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.faq-item {
+    background: #fff;
+    border: 1px solid rgba(34, 51, 59, 0.12);
+    border-radius: 10px;
+    padding: 1rem 1.15rem;
+    font-family: var(--brand-font-family, 'Inter', sans-serif);
+    font-size: 0.9375rem;
+    color: #1f2937;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    transition: box-shadow 0.15s ease;
+}
+
+.faq-item:hover {
+    box-shadow: 0 4px 12px rgba(15, 23, 42, 0.08);
+}
+
+.faq-item p {
+    margin: 0;
+}
+
+.faq-item p + p {
+    margin-top: 0.5rem;
+}
+
+.faq-toggle {
+    color: var(--brand-button-bg, #1f7a1f);
+    text-decoration: none;
+    font-weight: 600;
+}
+
+.faq-toggle:hover {
+    color: var(--brand-button-hover-bg, #145214);
+    text-decoration: underline;
+}
+
+.faq-item strong {
+    color: var(--brand-card-header-bg, #22333b);
+}
+
+.faq-video {
+    border-radius: 8px;
+    overflow: hidden;
+    background: #000;
+}
+
+.faq-video video {
+    display: block;
+    width: 100%;
+    max-height: 360px;
+}
+
+.home-footer {
+    background-color: var(--brand-footer-bg, #125a82);
+    color: #fff;
+    text-align: center;
+    padding: 0.85rem 1rem;
+    margin-top: 1rem;
+}
+
+.home-footer p {
+    margin: 0;
+    font-size: 0.8125rem;
+    font-family: var(--brand-font-family, 'Inter', sans-serif);
+}
+
+@media (max-width: 575.98px) {
+    .faq-section {
+        padding: 1.25rem 0 2rem;
+    }
+
+    .faq-header h2 {
+        font-size: 1.4rem;
+    }
+}
