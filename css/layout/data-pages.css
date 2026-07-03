@@ -627,3 +627,242 @@
         justify-content: flex-start;
     }
 }
+
+/* Student edit page */
+.student-edit-page {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding-bottom: 2rem;
+}
+
+.student-edit-header {
+    margin-bottom: 1.25rem;
+}
+
+.student-edit-back {
+    display: inline-block;
+    font-size: 0.8125rem;
+    font-weight: 600;
+    color: var(--brand-button-bg, #1f7a1f);
+    text-decoration: none;
+    margin-bottom: 0.35rem;
+}
+
+.student-edit-back:hover {
+    color: var(--brand-nav-link-hover, #145214);
+}
+
+.student-edit-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    letter-spacing: -0.03em;
+    color: var(--brand-card-header-bg, #22333b);
+    margin: 0 0 0.25rem;
+}
+
+.student-edit-subtitle {
+    font-size: 0.875rem;
+    color: #64748b;
+    margin: 0;
+}
+
+.student-edit-layout {
+    align-items: flex-start;
+}
+
+.student-edit-panel {
+    background: #fff;
+    border: 1px solid rgba(34, 51, 59, 0.1);
+    border-radius: 12px;
+    box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+    margin-bottom: 1rem;
+    overflow: hidden;
+}
+
+.student-edit-panel__head {
+    font-size: 0.7rem;
+    font-weight: 700;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--brand-card-header-bg, #22333b);
+    padding: 0.65rem 1rem;
+    background: rgba(34, 51, 59, 0.04);
+    border-bottom: 1px solid rgba(34, 51, 59, 0.08);
+}
+
+.student-edit-panel__body {
+    padding: 1rem 1.15rem 1.15rem;
+}
+
+.student-edit-identity .student-edit-panel__body {
+    padding-top: 1.25rem;
+}
+
+.student-edit-avatar-wrap {
+    margin-bottom: 1rem;
+}
+
+.student-edit-avatar {
+    width: 120px;
+    height: 120px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 3px solid rgba(34, 51, 59, 0.1);
+    margin: 0 auto;
+    display: block;
+}
+
+.student-edit-avatar--empty {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: rgba(31, 122, 31, 0.12);
+    color: var(--brand-button-bg, #1f7a1f);
+    font-size: 2.5rem;
+    font-weight: 700;
+}
+
+.student-edit-field {
+    margin-bottom: 1rem;
+}
+
+.student-edit-field:last-child {
+    margin-bottom: 0;
+}
+
+.student-edit-hint {
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin: 0.35rem 0 0;
+}
+
+.student-edit-page .form-label {
+    font-weight: 600;
+    font-size: 0.8125rem;
+    color: #374151;
+    margin-bottom: 0.3rem;
+}
+
+.student-edit-page .form-control,
+.student-edit-page .form-select {
+    border-radius: 8px;
+    font-size: 0.875rem;
+    border-color: rgba(34, 51, 59, 0.15);
+}
+
+.student-edit-page .form-control:focus,
+.student-edit-page .form-select:focus {
+    border-color: var(--brand-button-bg, #1f7a1f);
+    box-shadow: 0 0 0 3px rgba(31, 122, 31, 0.12);
+}
+
+.student-edit-page .font-monospace {
+    font-family: ui-monospace, 'Cascadia Code', monospace;
+    font-size: 0.8rem;
+}
+
+.student-edit-upload {
+    display: block;
+    border: 2px dashed rgba(34, 51, 59, 0.15);
+    border-radius: 10px;
+    padding: 1.25rem 1rem;
+    text-align: center;
+    cursor: pointer;
+    transition: border-color 0.15s, background 0.15s;
+}
+
+.student-edit-upload:hover {
+    border-color: var(--brand-button-bg, #1f7a1f);
+    background: rgba(31, 122, 31, 0.04);
+}
+
+.student-edit-upload input[type="file"] {
+    position: absolute;
+    width: 0.1px;
+    height: 0.1px;
+    opacity: 0;
+    overflow: hidden;
+}
+
+.student-edit-upload__label {
+    display: block;
+    font-weight: 600;
+    font-size: 0.875rem;
+    color: var(--brand-button-bg, #1f7a1f);
+}
+
+.student-edit-upload__hint {
+    display: block;
+    font-size: 0.75rem;
+    color: #94a3b8;
+    margin-top: 0.25rem;
+}
+
+.student-edit-sig-preview {
+    max-height: 56px;
+    margin-bottom: 0.5rem;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 4px;
+    background: #fff;
+}
+
+.student-edit-page .signature-wrap {
+    background: #fafafa;
+    border: 1px dashed #d1d5db;
+    border-radius: 8px;
+    padding: 0.65rem;
+}
+
+.student-edit-page .signature-wrap canvas {
+    display: block;
+    width: 100%;
+    height: 150px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    touch-action: none;
+}
+
+.student-edit-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.65rem;
+    justify-content: flex-end;
+    padding: 1rem 0 0.5rem;
+}
+
+.student-edit-actions .btn-primary {
+    background-color: var(--brand-button-bg, #1f7a1f);
+    border-color: var(--brand-button-bg, #1f7a1f);
+    font-weight: 600;
+    border-radius: 8px;
+    padding: 0.5rem 1.35rem;
+}
+
+.student-edit-actions .btn-primary:hover {
+    background-color: var(--brand-button-hover-bg, #ffb845);
+    border-color: var(--brand-button-hover-bg, #ffb845);
+    color: var(--brand-button-hover-text, #22333b);
+}
+
+.student-edit-face .face-enroll-panel {
+    margin-top: 0 !important;
+    border: none;
+    box-shadow: none;
+    border-radius: 0;
+}
+
+.student-edit-face .face-enroll-panel > .card-header {
+    display: none;
+}
+
+.student-edit-face .face-enroll-panel > .card-body {
+    padding: 0;
+}
+
+@media (max-width: 991.98px) {
+    .student-edit-identity {
+        margin-bottom: 0;
+    }
+}
