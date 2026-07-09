@@ -62,7 +62,7 @@ class PendingStudentController extends Controller
         $validated = $request->validate([
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
-            'middle_initial' => 'nullable|string|max:255',
+            'midname' => 'nullable|string|max:255',
             'student_id' => 'nullable|string|max:255',
             'mobile_number' => 'nullable|string|max:255',
             'educational_level' => PatronOptions::educationalLevelRule(),

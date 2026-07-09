@@ -13,7 +13,7 @@ return new class extends Migration
             $table->string('student_id')->nullable();
             $table->string('firstname');
             $table->string('lastname');
-            $table->string('middle_initial')->nullable();
+            $table->string('midname')->nullable();
             $table->date('birth_date')->nullable();
             $table->string('blood_type', 10)->nullable();
             $table->string('course')->nullable();

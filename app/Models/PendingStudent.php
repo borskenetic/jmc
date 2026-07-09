@@ -13,7 +13,7 @@ class PendingStudent extends Model
         'student_id',
         'firstname',
         'lastname',
-        'middle_initial',
+        'midname',
         'birth_date',
         'blood_type',
         'course',

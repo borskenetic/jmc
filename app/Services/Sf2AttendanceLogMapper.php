@@ -168,7 +168,7 @@ class Sf2AttendanceLogMapper
                 'sex' => $student->sex,
                 'last_name' => $student->lastname,
                 'first_name' => $student->firstname,
-                'middle_name' => $student->middle_initial ?: null,
+                'middle_name' => $student->midname ?: null,
                 'remarks' => '',
                 'absent_dates' => implode(', ', $marks['absent_dates']),
                 'tardy_dates' => implode(', ', $marks['tardy_dates']),

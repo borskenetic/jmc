@@ -56,8 +56,8 @@
                             <input type="text" id="student_firstname" name="firstname" class="form-control" value="{{ old('firstname') }}" required>
                         </div>
                         <div class="col-md-4">
-                            <label class="form-label" for="student_middle">Middle initial</label>
-                            <input type="text" id="student_middle" name="middle_initial" class="form-control" value="{{ old('middle_initial') }}">
+                            <label class="form-label" for="student_middle">Middle name</label>
+                            <input type="text" id="student_middle" name="midname" class="form-control" value="{{ old('midname') }}">
                         </div>
                         <div class="col-md-4">
                             <label class="form-label" for="student_lastname">Last name</label>

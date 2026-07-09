@@ -175,8 +175,8 @@
                             <td>
                                 <div class="students-name">
                                     {{ $student->lastname }}, {{ $student->firstname }}
-                                    @if($student->middle_initial)
-                                        <small>{{ $student->middle_initial }}.</small>
+                                    @if($student->midname)
+                                        <small>{{ $student->midname }}</small>
                                     @endif
                                 </div>
                             </td>

@@ -33,7 +33,7 @@ class Student extends Model
         'emergency_number',
         'emergency_address',
         'student_signature',
-        'middle_initial',
+        'midname',
         'role_id',
         'normalized_name',
         'address',

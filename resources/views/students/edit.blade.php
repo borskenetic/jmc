@@ -119,9 +119,9 @@
                                 @error('lastname')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-4">
-                                <label for="middle_initial" class="form-label">Middle initial</label>
-                                <input type="text" name="middle_initial" id="middle_initial" class="form-control"
-                                       value="{{ old('middle_initial', $student->middle_initial) }}" maxlength="5">
+                                <label for="midname" class="form-label">Middle name</label>
+                                <input type="text" name="midname" id="midname" class="form-control"
+                                       value="{{ old('midname', $student->midname) }}" maxlength="255">
                             </div>
                             <div class="col-md-6">
                                 <label for="student_id" class="form-label">Student ID <span class="text-danger">*</span></label>

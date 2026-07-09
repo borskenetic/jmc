@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('firstname');
             $table->string('lastname');
             $table->string('normalized_name', 255)->nullable()->index();
-            $table->string('middle_initial')->nullable();
+            $table->string('midname')->nullable();
             $table->date('birth_date')->nullable();
             $table->string('blood_type', 10)->nullable();
 

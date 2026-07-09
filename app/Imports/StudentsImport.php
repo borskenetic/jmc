@@ -43,11 +43,11 @@ class StudentsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
 
             $seenIds[$studentId] = $line;
 
-            [$firstname, $middleInitial] = $this->parseName($row);
+            [$firstname, $midname] = $this->parseName($row);
             $lastname = $this->value($row, ['lastname', 'last_name']);
 
             $student = Student::where('student_id', $studentId)->first();
-            $mapped = $this->mapRowAttributes($row, $studentId, $firstname, $middleInitial, $lastname);
+            $mapped = $this->mapRowAttributes($row, $studentId, $firstname, $midname, $lastname);
 
             if ($student === null) {
                 if ($firstname === '' || $lastname === '') {
@@ -109,7 +109,7 @@ class StudentsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
         array $row,
         string $studentId,
         string $firstname,
-        string $middleInitial,
+        string $midname,
         string $lastname,
     ): array {
         $gradeLevel = $this->value($row, ['year', 'grade_level']);
@@ -126,7 +126,7 @@ class StudentsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
             'student_id' => $studentId,
             'firstname' => $firstname,
             'lastname' => $lastname,
-            'middle_initial' => $middleInitial !== '' ? $middleInitial : null,
+            'midname' => $midname !== '' ? $midname : null,
             'lrn' => $this->value($row, ['lrn']) ?: null,
             'year' => $gradeLevel !== '' ? $gradeLevel : null,
             'educational_level' => $educationalLevel !== '' ? $educationalLevel : null,
@@ -174,10 +174,10 @@ class StudentsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
     private function parseName(array $row): array
     {
         $firstname = $this->value($row, ['firstname', 'first_name']);
-        $middleInitial = $this->value($row, ['middle_initial', 'mi']);
+        $midname = $this->value($row, ['midname', 'middle_initial', 'mi']);
 
         if ($firstname !== '') {
-            return [$firstname, $middleInitial];
+            return [$firstname, $midname];
         }
 
         $combined = $this->value($row, [
@@ -188,12 +188,12 @@ class StudentsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
         ]);
 
         if ($combined === '') {
-            return ['', $middleInitial];
+            return ['', $midname];
         }
 
         $parts = preg_split('/\s+/', $combined) ?: [];
         if (count($parts) === 1) {
-            return [$parts[0], $middleInitial];
+            return [$parts[0], $midname];
         }
 
         $last = array_pop($parts);
@@ -203,7 +203,7 @@ class StudentsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
 
         $parts[] = $last;
 
-        return [implode(' ', $parts), $middleInitial];
+        return [implode(' ', $parts), $midname];
     }
 
     /**
