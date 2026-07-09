@@ -19,6 +19,7 @@ class StudentsImportTemplateExport implements FromArray, WithHeadings
             'CONTACT PERSON',
             'NUMBER',
             'ADDRESS',
+            'PROFILE PICTURE',
             'RFID',
         ];
     }
@@ -36,6 +37,7 @@ class StudentsImportTemplateExport implements FromArray, WithHeadings
                 'Maria Dela Cruz',
                 '09171234567',
                 '123 Main St, Davao City',
+                '2024-00001.jpg',
                 '',
             ],
         ];

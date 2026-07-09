@@ -5,6 +5,7 @@ namespace App\Imports;
 use App\Console\Commands\NormalizeStudentNames;
 use App\Enums\EducationalLevel;
 use App\Models\Student;
+use App\Support\ProfilePicture;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
 use Maatwebsite\Excel\Concerns\ToCollection;
@@ -136,6 +137,7 @@ class StudentsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
             'emergency_person' => $this->value($row, ['emergency_person', 'contact_person']) ?: null,
             'emergency_number' => $this->value($row, ['emergency_number', 'number']) ?: null,
             'emergency_address' => $this->value($row, ['emergency_address', 'address']) ?: null,
+            'profile_picture' => $this->normalizeProfilePicture($row),
             'rfid' => $this->value($row, ['rfid']) ?: null,
             'qrcode' => $this->value($row, ['qrcode']) ?: null,
         ];
@@ -272,6 +274,21 @@ class StudentsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
         }
 
         return 'S-'.str_pad((string) $nextNumber, 8, '0', STR_PAD_LEFT);
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     */
+    private function normalizeProfilePicture(array $row): ?string
+    {
+        $value = $this->value($row, [
+            'profile_picture',
+            'profile_photo',
+            'photo',
+            'picture',
+        ]);
+
+        return $value !== '' ? ProfilePicture::relativePath($value) : null;
     }
 
     private function parseDate(mixed $value): ?string
