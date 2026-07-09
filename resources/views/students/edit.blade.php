@@ -130,6 +130,12 @@
                                 @error('student_id')<div class="invalid-feedback">{{ $message }}</div>@enderror
                             </div>
                             <div class="col-md-6">
+                                <label for="lrn" class="form-label">LRN</label>
+                                <input type="text" name="lrn" id="lrn" class="form-control @error('lrn') is-invalid @enderror"
+                                       value="{{ old('lrn', $student->lrn) }}" placeholder="Learner reference number">
+                                @error('lrn')<div class="invalid-feedback">{{ $message }}</div>@enderror
+                            </div>
+                            <div class="col-md-6">
                                 <label for="birth_date" class="form-label">Birthday</label>
                                 <input type="date" name="birth_date" id="birth_date" class="form-control @error('birth_date') is-invalid @enderror"
                                        value="{{ $birthValue }}">

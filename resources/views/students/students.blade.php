@@ -49,6 +49,20 @@
             <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
         </div>
     @endif
+    @if(session('student_import_errors') && count(session('student_import_errors')) > 0)
+        <div class="alert alert-warning alert-dismissible fade show" role="alert">
+            <strong>Import notes:</strong>
+            <ul class="mb-0 mt-1 small">
+                @foreach(array_slice(session('student_import_errors'), 0, 5) as $note)
+                    <li>{{ $note }}</li>
+                @endforeach
+                @if(count(session('student_import_errors')) > 5)
+                    <li>…and {{ count(session('student_import_errors')) - 5 }} more</li>
+                @endif
+            </ul>
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    @endif
     @if(session('rfid_import_errors') && count(session('rfid_import_errors')) > 0)
         <div class="alert alert-warning alert-dismissible fade show" role="alert">
             <strong>Import notes:</strong>

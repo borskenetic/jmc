@@ -101,9 +101,27 @@ class StudentController extends Controller
             'file' => 'required|file|mimes:csv,xlsx,xls|max:10240',
         ]);
 
-        Excel::import(new StudentsImport, $request->file('file'));
+        $import = new StudentsImport;
+        Excel::import($import, $request->file('file'));
 
-        return back()->with('success', 'Students imported successfully.');
+        $message = "Student import complete: {$import->created} created";
+        if ($import->updated > 0) {
+            $message .= ", {$import->updated} updated";
+        }
+        if ($import->skipped > 0) {
+            $message .= ", {$import->skipped} skipped";
+        }
+        $message .= '.';
+
+        if ($import->created === 0 && $import->updated === 0 && $import->errors !== []) {
+            return back()
+                ->with('error', $message.' '.implode(' ', array_slice($import->errors, 0, 3)))
+                ->with('student_import_errors', $import->errors);
+        }
+
+        return back()
+            ->with('success', $message)
+            ->with('student_import_errors', $import->errors);
     }
 
     public function downloadRfidImportTemplate()
@@ -196,6 +214,7 @@ class StudentController extends Controller
         // Validation
         $validated = $request->validate([
             'student_id' => 'required|string|max:255|unique:students,student_id',
+            'lrn' => 'nullable|string|max:32',
             'firstname' => 'required|string|max:255',
             'lastname' => 'required|string|max:255',
             'middle_initial' => 'nullable|string|max:255',
@@ -293,6 +312,7 @@ class StudentController extends Controller
     
         $validated = $request->validate([
             'student_id' => 'required|string|max:255|unique:students,student_id,' . $id,
+            'lrn' => 'nullable|string|max:32',
             'lastname' => 'required|string|max:255',
             'firstname' => 'required|string|max:255',
             'middle_initial' => 'nullable|string|max:255',

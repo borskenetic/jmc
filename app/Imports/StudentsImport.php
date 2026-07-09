@@ -5,58 +5,258 @@ namespace App\Imports;
 use App\Console\Commands\NormalizeStudentNames;
 use App\Enums\EducationalLevel;
 use App\Models\Student;
-use Illuminate\Validation\Rule;
+use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Concerns\SkipsEmptyRows;
-use Maatwebsite\Excel\Concerns\ToModel;
+use Maatwebsite\Excel\Concerns\ToCollection;
 use Maatwebsite\Excel\Concerns\WithHeadingRow;
-use Maatwebsite\Excel\Concerns\WithValidation;
 
-class StudentsImport implements ToModel, WithHeadingRow, SkipsEmptyRows, WithValidation
+class StudentsImport implements ToCollection, WithHeadingRow, SkipsEmptyRows
 {
-    public function rules(): array
+    public int $created = 0;
+
+    public int $updated = 0;
+
+    public int $skipped = 0;
+
+    /** @var list<string> */
+    public array $errors = [];
+
+    public function collection(Collection $rows): void
     {
-        return [
-            '*.student_id' => 'required|distinct|unique:students,student_id',
-            '*.firstname' => 'required|string|max:255',
-            '*.lastname' => 'required|string|max:255',
-            '*.qrcode' => 'nullable|distinct|unique:students,qrcode',
-            '*.educational_level' => ['nullable', Rule::in(EducationalLevel::values())],
-        ];
+        $seenIds = [];
+
+        foreach ($rows as $index => $row) {
+            $line = $index + 2;
+            $row = $row->toArray();
+            $studentId = $this->value($row, ['student_id', 'id_number', 'id']);
+
+            if ($studentId === '') {
+                continue;
+            }
+
+            if (isset($seenIds[$studentId])) {
+                $this->skipped++;
+                $this->errors[] = "Row {$line}: duplicate ID \"{$studentId}\" in file (first at row {$seenIds[$studentId]}).";
+
+                continue;
+            }
+
+            $seenIds[$studentId] = $line;
+
+            [$firstname, $middleInitial] = $this->parseName($row);
+            $lastname = $this->value($row, ['lastname', 'last_name']);
+
+            $student = Student::where('student_id', $studentId)->first();
+            $mapped = $this->mapRowAttributes($row, $studentId, $firstname, $middleInitial, $lastname);
+
+            if ($student === null) {
+                if ($firstname === '' || $lastname === '') {
+                    $this->skipped++;
+                    $this->errors[] = "Row {$line}: first and last name are required for new student \"{$studentId}\".";
+
+                    continue;
+                }
+
+                if (! $this->rfidAvailable($mapped['rfid'] ?? null, null)) {
+                    $this->skipped++;
+                    $this->errors[] = "Row {$line}: RFID \"{$mapped['rfid']}\" is already assigned to another student.";
+
+                    continue;
+                }
+
+                if (! isset($mapped['educational_level'])) {
+                    $mapped['educational_level'] = EducationalLevel::College->value;
+                }
+
+                $mapped['qrcode'] = $this->nextStudentQrCode();
+                $mapped['normalized_name'] = NormalizeStudentNames::normalizeFullName($firstname.' '.$lastname);
+
+                Student::create($mapped);
+                $this->created++;
+
+                continue;
+            }
+
+            $updates = $this->fillOnlyEmpty($student, $mapped);
+
+            if (isset($updates['rfid']) && ! $this->rfidAvailable($updates['rfid'], $student->id)) {
+                unset($updates['rfid']);
+                $this->errors[] = "Row {$line}: RFID already assigned to another student; other fields were still applied if any.";
+            }
+
+            if ($updates === []) {
+                $this->skipped++;
+
+                continue;
+            }
+
+            if (isset($updates['firstname']) || isset($updates['lastname'])) {
+                $updates['normalized_name'] = NormalizeStudentNames::normalizeFullName(
+                    ($updates['firstname'] ?? $student->firstname).' '.($updates['lastname'] ?? $student->lastname),
+                );
+            }
+
+            $student->update($updates);
+            $this->updated++;
+        }
     }
 
-    public function model(array $row)
-    {
-        $studentId = trim((string) ($row['student_id'] ?? $row['id_number'] ?? ''));
-        $firstname = trim((string) ($row['firstname'] ?? ''));
-        $lastname = trim((string) ($row['lastname'] ?? ''));
-
-        if ($studentId === '' || $firstname === '' || $lastname === '') {
-            return null;
+    /**
+     * @param  array<string, mixed>  $row
+     * @return array<string, mixed>
+     */
+    private function mapRowAttributes(
+        array $row,
+        string $studentId,
+        string $firstname,
+        string $middleInitial,
+        string $lastname,
+    ): array {
+        $gradeLevel = $this->value($row, ['year', 'grade_level']);
+        $educationalLevel = $this->value($row, ['educational_level']);
+        if ($educationalLevel === '' && $gradeLevel !== '') {
+            $educationalLevel = $this->educationalLevelForGrade($gradeLevel) ?? '';
         }
 
-        $qrcode = trim((string) ($row['qrcode'] ?? ''));
-        if ($qrcode === '') {
-            $qrcode = $this->nextStudentQrCode();
+        if ($educationalLevel !== '' && ! in_array($educationalLevel, EducationalLevel::values(), true)) {
+            $educationalLevel = '';
         }
 
-        $level = trim((string) ($row['educational_level'] ?? ''));
-        if ($level === '' || ! in_array($level, EducationalLevel::values(), true)) {
-            $level = EducationalLevel::College->value;
-        }
-
-        return new Student([
+        $data = [
             'student_id' => $studentId,
             'firstname' => $firstname,
             'lastname' => $lastname,
-            'middle_initial' => trim((string) ($row['middle_initial'] ?? '')) ?: null,
-            'educational_level' => $level,
-            'course' => trim((string) ($row['course'] ?? '')) ?: null,
-            'year' => trim((string) ($row['year'] ?? '')) ?: null,
-            'mobile_number' => trim((string) ($row['mobile_number'] ?? '')) ?: null,
-            'birth_date' => $this->parseDate($row['birth_date'] ?? null),
-            'qrcode' => $qrcode,
-            'normalized_name' => NormalizeStudentNames::normalizeFullName($firstname.' '.$lastname),
+            'middle_initial' => $middleInitial !== '' ? $middleInitial : null,
+            'lrn' => $this->value($row, ['lrn']) ?: null,
+            'year' => $gradeLevel !== '' ? $gradeLevel : null,
+            'educational_level' => $educationalLevel !== '' ? $educationalLevel : null,
+            'course' => $this->value($row, ['course']) ?: null,
+            'mobile_number' => $this->value($row, ['mobile_number']) ?: null,
+            'birth_date' => $this->parseDate($row['birth_date'] ?? $row['date_of_birth'] ?? null),
+            'emergency_person' => $this->value($row, ['emergency_person', 'contact_person']) ?: null,
+            'emergency_number' => $this->value($row, ['emergency_number', 'number']) ?: null,
+            'emergency_address' => $this->value($row, ['emergency_address', 'address']) ?: null,
+            'rfid' => $this->value($row, ['rfid']) ?: null,
+            'qrcode' => $this->value($row, ['qrcode']) ?: null,
+        ];
+
+        return array_filter(
+            $data,
+            fn (mixed $value, string $key) => $key === 'student_id' || ($value !== null && $value !== ''),
+            ARRAY_FILTER_USE_BOTH,
+        );
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     * @param  list<string>  $keys
+     */
+    private function value(array $row, array $keys): string
+    {
+        foreach ($keys as $key) {
+            if (! array_key_exists($key, $row)) {
+                continue;
+            }
+
+            $value = trim((string) $row[$key]);
+            if ($value !== '') {
+                return $value;
+            }
+        }
+
+        return '';
+    }
+
+    /**
+     * @param  array<string, mixed>  $row
+     * @return array{0: string, 1: string}
+     */
+    private function parseName(array $row): array
+    {
+        $firstname = $this->value($row, ['firstname', 'first_name']);
+        $middleInitial = $this->value($row, ['middle_initial', 'mi']);
+
+        if ($firstname !== '') {
+            return [$firstname, $middleInitial];
+        }
+
+        $combined = $this->value($row, [
+            'first_name_mi',
+            'first_name_m_i',
+            'first_name_and_mi',
+            'firstname_mi',
         ]);
+
+        if ($combined === '') {
+            return ['', $middleInitial];
+        }
+
+        $parts = preg_split('/\s+/', $combined) ?: [];
+        if (count($parts) === 1) {
+            return [$parts[0], $middleInitial];
+        }
+
+        $last = array_pop($parts);
+        if (preg_match('/^[A-Za-z]\.?$/', $last)) {
+            return [implode(' ', $parts), rtrim($last, '.')];
+        }
+
+        $parts[] = $last;
+
+        return [implode(' ', $parts), $middleInitial];
+    }
+
+    /**
+     * @param  array<string, mixed>  $candidates
+     * @return array<string, mixed>
+     */
+    private function fillOnlyEmpty(Student $student, array $candidates): array
+    {
+        unset($candidates['student_id'], $candidates['qrcode']);
+
+        $updates = [];
+
+        foreach ($candidates as $field => $value) {
+            if ($value === null || $value === '') {
+                continue;
+            }
+
+            $current = $student->{$field};
+
+            if ($current === null || $current === '') {
+                $updates[$field] = $value;
+            }
+        }
+
+        return $updates;
+    }
+
+    private function rfidAvailable(?string $rfid, ?int $exceptStudentId): bool
+    {
+        if ($rfid === null || $rfid === '') {
+            return true;
+        }
+
+        $query = Student::where('rfid', $rfid);
+
+        if ($exceptStudentId !== null) {
+            $query->where('id', '!=', $exceptStudentId);
+        }
+
+        return ! $query->exists();
+    }
+
+    private function educationalLevelForGrade(string $gradeLevel): ?string
+    {
+        $gradeLevel = trim($gradeLevel);
+
+        foreach (config('patron.year_options', []) as $level => $years) {
+            if (in_array($gradeLevel, $years, true)) {
+                return $level;
+            }
+        }
+
+        return null;
     }
 
     private function nextStudentQrCode(): string

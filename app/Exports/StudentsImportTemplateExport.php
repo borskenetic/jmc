@@ -10,16 +10,16 @@ class StudentsImportTemplateExport implements FromArray, WithHeadings
     public function headings(): array
     {
         return [
-            'student_id',
-            'firstname',
-            'lastname',
-            'middle_initial',
-            'educational_level',
-            'course',
-            'year',
-            'mobile_number',
-            'birth_date',
-            'qrcode',
+            'ID NUMBER',
+            'LAST NAME',
+            'FIRST NAME & MI',
+            'GRADE LEVEL',
+            'LRN',
+            'DATE OF BIRTH',
+            'CONTACT PERSON',
+            'NUMBER',
+            'ADDRESS',
+            'RFID',
         ];
     }
 
@@ -28,14 +28,14 @@ class StudentsImportTemplateExport implements FromArray, WithHeadings
         return [
             [
                 '2024-00001',
-                'Juan',
                 'Dela Cruz',
-                'M',
-                'college',
-                'BSCS',
-                '1st Year',
-                '09171234567',
+                'Juan M',
+                'Grade 7',
+                '123456789012',
                 '2004-03-15',
+                'Maria Dela Cruz',
+                '09171234567',
+                '123 Main St, Davao City',
                 '',
             ],
         ];
