@@ -17,7 +17,7 @@
         <div class="card-body">
             <p class="text-muted">
                 When enabled, students who scan <strong>OUT</strong> at the attendance kiosk see a short popup asking
-                how their library visit was. Responses appear under
+                how their visit was. Responses appear under
                 <a href="{{ route('feedback.index') }}">View Feedback Responses</a>.
             </p>
 

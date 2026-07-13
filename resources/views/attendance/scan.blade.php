@@ -14,9 +14,16 @@
     <div class="logo-title">
       <img src="{{ asset('images/pantasLogo.png') }}" alt="Logo">
     </div>
-    @if(config('face.enabled'))
-      <a href="{{ route('attendance.face') }}" class="scan-header-link ms-3">Face gate terminal</a>
-    @endif
+    <div class="header-actions">
+      <div class="gate-terminal-badge" id="gateTerminalBadge" hidden>
+        <span class="gate-terminal-badge__label">Gate:</span>
+        <strong id="gateTerminalLabel"></strong>
+        <button type="button" class="gate-terminal-badge__change" id="gateTerminalChange">Change</button>
+      </div>
+      @if(config('face.enabled'))
+        <a href="{{ route('attendance.face') }}" class="scan-header-link">Face gate terminal</a>
+      @endif
+    </div>
   </div>
 </header>
 
@@ -72,22 +79,24 @@
 
 <div id="sectionModal" class="section-modal" aria-hidden="true">
   <div class="modal-content section-picker-modal">
-    <h2>Select library section</h2>
+    <h2>Select section</h2>
     <div class="section-buttons" id="sectionButtons" data-count="{{ count($attendanceSections ?? []) }}">
       @forelse($attendanceSections ?? [] as $section)
         <button type="button" data-section="{{ $section }}">{{ $section }}</button>
       @empty
-        <p class="section-empty-msg">No sections configured. Add sections under Attendance → Section Picker.</p>
+        <p class="section-empty-msg">No sections configured.</p>
       @endforelse
     </div>
   </div>
 </div>
 
+@include('attendance.partials.gate-terminal')
+
 <audio id="scanAlarmSound" src="{{ asset('sounds/alarm.wav') }}" preload="auto"></audio>
 
 <div id="feedbackModal" class="section-modal" aria-hidden="true">
   <div class="modal-content feedback-card">
-    <h2>How was your library experience?</h2>
+    <h2>How was your experience?</h2>
     <div class="feedback-options">
       <button type="button" data-rating="excellent">😊<span>Excellent</span></button>
       <button type="button" data-rating="good">🙂<span>Good</span></button>
@@ -99,6 +108,15 @@
   </div>
 </div>
 
+<script>
+  window.GATE_TERMINAL_CONFIG = {
+    availableUrl: @json(route('attendance.gates.available')),
+    claimUrl: @json(route('attendance.gates.claim')),
+    pingUrl: @json(route('attendance.gates.ping')),
+    csrf: @json(csrf_token()),
+  };
+</script>
+<script src="{{ \App\Support\VersionedAsset::url('js/gate-terminal-kiosk.js') }}"></script>
 <script>
   const LOGOUT_FEEDBACK_ENABLED = @json($logoutFeedbackEnabled ?? false);
   const SECTION_PICKER_ENABLED = @json($sectionPickerEnabled ?? false);
@@ -232,6 +250,20 @@
       }, 500);
     }
 
+    function gatePayload() {
+      return window.GateTerminalKiosk ? window.GateTerminalKiosk.payload() : {};
+    }
+
+    function ensureGateSelected() {
+      const gateModal = document.getElementById('gateTerminalModal');
+      if (gateModal && gateModal.style.display === 'flex') return false;
+      if (!window.GateTerminalKiosk || !window.GateTerminalKiosk.getGate()) {
+        window.GateTerminalKiosk?.openModal();
+        return false;
+      }
+      return true;
+    }
+
     function processVisitorLog(visitorId) {
       return fetch("{{ route('attendance.visitor') }}", {
         method: 'POST',
@@ -240,7 +272,7 @@
           'X-CSRF-TOKEN': '{{ csrf_token() }}',
           'Accept': 'application/json',
         },
-        body: JSON.stringify({ visitor_id: visitorId }),
+        body: JSON.stringify({ visitor_id: visitorId, ...gatePayload() }),
       });
     }
 
@@ -272,6 +304,7 @@
       if (e.key !== 'Enter') return;
       e.preventDefault();
       if (isCooldown) return;
+      if (!ensureGateSelected()) return;
       isCooldown = true;
       setTimeout(() => { isCooldown = false; }, 300);
 
@@ -320,7 +353,7 @@
                   'X-CSRF-TOKEN': '{{ csrf_token() }}',
                   'Accept': 'application/json',
                 },
-                body: JSON.stringify({ student_id: currentStudentId, section: null })
+                body: JSON.stringify({ student_id: currentStudentId, section: null, ...gatePayload() })
               })
               .then(async res => {
                 const response = await res.json();
@@ -363,7 +396,7 @@
                     'X-CSRF-TOKEN': '{{ csrf_token() }}',
                     'Accept': 'application/json',
                   },
-                  body: JSON.stringify({ student_id: currentStudentId, section: null })
+                  body: JSON.stringify({ student_id: currentStudentId, section: null, ...gatePayload() })
                 })
                 .then(res => res.json())
                 .then(response => {
@@ -403,7 +436,8 @@
           },
           body: JSON.stringify({
             student_id: currentStudentId,
-            section: this.dataset.section
+            section: this.dataset.section,
+            ...gatePayload(),
           })
         })
         .then(res => res.json())

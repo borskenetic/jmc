@@ -12,17 +12,25 @@ class Setting extends Model
 
     public const KEY_ATTENDANCE_SECTIONS = 'attendance_sections';
 
+    public const KEY_GATE_TERMINALS = 'gate_terminals';
+
     public const KEY_SCAN_SMS = 'scan_sms';
 
+    public const DEFAULT_GATE_TERMINALS = [
+        'Main Gate',
+        'North Gate',
+        'South Gate',
+        'East Gate',
+        'West Gate',
+        'Back Gate',
+    ];
+
     public const DEFAULT_ATTENDANCE_SECTIONS = [
-        'Circulation Section',
-        'Reference Section',
-        'Serials Section',
-        'Filipiniana Section',
-        'Discussion Room',
-        'Audio Visual Room',
-        'Learning Commons',
-        'Biblionook',
+        'Main Building',
+        'High School Building',
+        'Grade School Building',
+        'Gymnasium',
+        'Canteen',
     ];
 
     protected $fillable = ['key', 'value'];
@@ -98,6 +106,56 @@ class Setting extends Model
         static::updateOrCreate(
             ['key' => self::KEY_ATTENDANCE_SECTIONS],
             ['value' => json_encode($sections, JSON_UNESCAPED_UNICODE)]
+        );
+    }
+
+    /** @return list<string> */
+    public static function gateTerminals(): array
+    {
+        $raw = static::where('key', self::KEY_GATE_TERMINALS)->value('value');
+
+        if ($raw === null) {
+            $legacy = static::where('key', self::KEY_ATTENDANCE_SECTIONS)->value('value');
+            if ($legacy !== null) {
+                $decoded = json_decode($legacy, true);
+                if (is_array($decoded)) {
+                    $gates = array_values(array_unique(array_filter(array_map(
+                        fn ($name) => trim((string) $name),
+                        $decoded
+                    ))));
+                    if ($gates !== []) {
+                        return $gates;
+                    }
+                }
+            }
+
+            return self::DEFAULT_GATE_TERMINALS;
+        }
+
+        $decoded = json_decode($raw, true);
+        if (! is_array($decoded)) {
+            return self::DEFAULT_GATE_TERMINALS;
+        }
+
+        $gates = array_values(array_unique(array_filter(array_map(
+            fn ($name) => trim((string) $name),
+            $decoded
+        ))));
+
+        return $gates !== [] ? $gates : self::DEFAULT_GATE_TERMINALS;
+    }
+
+    /** @param  list<string>  $gates */
+    public static function setGateTerminals(array $gates): void
+    {
+        $gates = array_values(array_unique(array_filter(array_map(
+            fn ($name) => trim((string) $name),
+            $gates
+        ))));
+
+        static::updateOrCreate(
+            ['key' => self::KEY_GATE_TERMINALS],
+            ['value' => json_encode($gates, JSON_UNESCAPED_UNICODE)]
         );
     }
 }

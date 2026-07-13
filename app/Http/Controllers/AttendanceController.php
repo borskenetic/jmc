@@ -10,6 +10,7 @@ use App\Models\Visitor;
 use App\Models\VisitorLog;
 use App\Services\AttendanceSessionService;
 use App\Services\FaceMatchService;
+use App\Services\GateTerminalService;
 use App\Services\StudentDeparturePolicy;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -60,6 +61,7 @@ class AttendanceController extends Controller
             'logoutFeedbackEnabled' => $this->effectiveLogoutFeedbackEnabled(),
             'sectionPickerEnabled' => $this->effectiveSectionPickerEnabled(),
             'attendanceSections' => Setting::attendanceSections(),
+            'gateTerminals' => Setting::gateTerminals(),
             'earlyDepartureEnabled' => $departure->isEnabled(),
             'earlyDepartureCutoffLabel' => $departure->earliestOutLabel(),
         ];
@@ -96,46 +98,74 @@ class AttendanceController extends Controller
         );
     }
 
-    public function sectionSettings()
+    public function gateSettings()
     {
-        if (! config('attendance.section_picker_enabled')) {
-            abort(404);
-        }
-
-        return view('attendance.section_settings', [
-            'enabled' => Setting::sectionPickerEnabled(),
-            'sections' => Setting::attendanceSections(),
+        return view('attendance.gate_settings', [
+            'gates' => Setting::gateTerminals(),
         ]);
     }
 
-    public function updateSectionSettings(Request $request)
+    public function updateGateSettings(Request $request, GateTerminalService $gates)
     {
-        if (! config('attendance.section_picker_enabled')) {
-            abort(404);
-        }
-
         $request->validate([
-            'enabled' => 'required|in:0,1',
-            'sections' => 'required|array|min:1',
-            'sections.*' => 'required|string|max:120|distinct',
+            'gates' => 'required|array|min:1',
+            'gates.*' => 'required|string|max:120|distinct',
         ]);
 
-        $sections = array_values(array_unique(array_filter(array_map(
+        $gateList = array_values(array_unique(array_filter(array_map(
             fn ($name) => trim((string) $name),
-            $request->input('sections', [])
+            $request->input('gates', [])
         ))));
 
-        Setting::setSectionPickerEnabled($request->input('enabled') === '1');
-        Setting::setAttendanceSections($sections);
-
-        $pickerOn = $request->input('enabled') === '1';
+        Setting::setGateTerminals($gateList);
+        $gates->releaseGatesNotInList($gateList);
 
         return back()->with(
             'success',
-            $pickerOn
-                ? 'Section picker enabled with '.count($sections).' section(s) on the gate terminal.'
-                : 'Section picker disabled. '.count($sections).' section(s) saved for logs and filters.'
+            'Saved '.count($gateList).' gate(s). Kiosks will only show gates not already in use.'
         );
+    }
+
+    public function availableGates(Request $request, GateTerminalService $gates)
+    {
+        $request->validate([
+            'terminal_token' => 'required|string|max:64',
+        ]);
+
+        return response()->json([
+            'gates' => $gates->availableGatesFor($request->input('terminal_token')),
+            'current_gate' => $gates->currentGateFor($request->input('terminal_token')),
+        ]);
+    }
+
+    public function claimGate(Request $request, GateTerminalService $gates)
+    {
+        $request->validate([
+            'terminal_token' => 'required|string|max:64',
+            'gate' => 'required|string|max:120',
+        ]);
+
+        $result = $gates->claim(
+            $request->input('terminal_token'),
+            $request->input('gate'),
+        );
+
+        if (! $result['ok']) {
+            return response()->json(['message' => $result['message']], 422);
+        }
+
+        return response()->json(['gate' => $result['gate']]);
+    }
+
+    public function pingGate(Request $request, GateTerminalService $gates)
+    {
+        $request->validate([
+            'terminal_token' => 'required|string|max:64',
+        ]);
+
+        $gates->ping($request->input('terminal_token'));
+
+        return response()->json(['ok' => true]);
     }
 
     public function scan(Request $request)
@@ -229,12 +259,20 @@ class AttendanceController extends Controller
         ];
     }
 
-    public function processSection(Request $request)
+    public function processSection(Request $request, GateTerminalService $gateTerminalService)
     {
         $request->validate([
             'student_id' => 'required|integer|exists:students,id',
             'section' => 'nullable|string|max:255',
+            'gate' => 'required|string|max:120',
         ]);
+
+        $gate = $gateTerminalService->validateGateForScan($request->input('gate'));
+        if ($gate === null) {
+            return response()->json([
+                'message' => 'Select a valid gate on this terminal before scanning.',
+            ], 422);
+        }
 
         $section = $request->section ? trim((string) $request->section) : null;
         if ($section !== null && $section !== '') {
@@ -268,6 +306,7 @@ class AttendanceController extends Controller
         $log = AttendanceLog::create([
             'student_id' => $student->id,
             'section' => $section,
+            'gate' => $gate,
             'status' => $newStatus,
             'scanned_at' => now(),
         ]);
@@ -281,11 +320,19 @@ class AttendanceController extends Controller
         ]);
     }
 
-    public function processVisitor(Request $request)
+    public function processVisitor(Request $request, GateTerminalService $gateTerminalService)
     {
         $request->validate([
             'visitor_id' => 'required|integer|exists:visitors,id',
+            'gate' => 'required|string|max:120',
         ]);
+
+        $gate = $gateTerminalService->validateGateForScan($request->input('gate'));
+        if ($gate === null) {
+            return response()->json([
+                'message' => 'Select a valid gate on this terminal before scanning.',
+            ], 422);
+        }
 
         $visitor = Visitor::findOrFail($request->visitor_id);
         $sessions = app(AttendanceSessionService::class);
@@ -301,6 +348,7 @@ class AttendanceController extends Controller
         $log = VisitorLog::create([
             'visitor_id' => $visitor->id,
             'status' => $newStatus,
+            'gate' => $gate,
             'scanned_at' => now(),
         ]);
 

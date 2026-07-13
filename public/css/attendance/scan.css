@@ -41,6 +41,50 @@ body.scan-kiosk-page {
       color: var(--brand-primary, #29abe2);
     }
 
+    .gate-terminal-badge {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.35rem 0.75rem;
+      background: #eef8fd;
+      border: 1px solid rgba(41, 171, 226, 0.35);
+      border-radius: 999px;
+      font-size: 0.8125rem;
+      color: var(--brand-primary-darker, #125a82);
+      flex-shrink: 0;
+    }
+
+    .gate-terminal-badge__label { opacity: 0.8; }
+
+    .gate-terminal-badge__change {
+      border: none;
+      background: transparent;
+      color: var(--brand-primary, #29abe2);
+      font-weight: 600;
+      cursor: pointer;
+      padding: 0;
+      font-size: inherit;
+    }
+
+    .gate-terminal-badge__change:hover { text-decoration: underline; }
+
+    .gate-terminal-modal__hint {
+      margin: 0 0 1rem;
+      color: #5a6b7a;
+      font-size: 0.95rem;
+      text-align: center;
+    }
+
+    .header-actions {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: clamp(8px, 1.5vw, 16px);
+      flex-shrink: 0;
+    }
+
+    .header-actions > a { margin-left: 0; }
+
     .header img {
       width: clamp(240px, 28vw, 360px);
       height: auto;

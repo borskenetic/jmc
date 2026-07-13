@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\AttendanceLog;
 use App\Models\GradeSection;
+use App\Models\Setting;
 use App\Models\Student;
 use Illuminate\Support\Facades\Schema;
 use App\Services\PatronAttendanceReportService;
@@ -46,11 +47,24 @@ class AttendanceLogController extends Controller
             ->sort()
             ->values();
 
+        $gateOptions = collect(Setting::gateTerminals());
+        if (Schema::hasColumn('attendance_logs', 'gate')) {
+            $gateOptions = $gateOptions->merge(
+                AttendanceLog::query()
+                    ->whereNotNull('gate')
+                    ->where('gate', '!=', '')
+                    ->distinct()
+                    ->orderBy('gate')
+                    ->pluck('gate')
+            )->unique()->sort()->values();
+        }
+
         return view('attendance_logs.index', compact(
             'logs',
             'summary',
             'yearOptions',
             'homeroomSections',
+            'gateOptions',
         ));
     }
 
@@ -90,6 +104,10 @@ class AttendanceLogController extends Controller
 
             ->when($request->status,
                 fn ($q) => $q->where('status', strtoupper((string) $request->status))
+            )
+
+            ->when($request->gate && Schema::hasColumn('attendance_logs', 'gate'),
+                fn ($q) => $q->where('gate', $request->gate)
             )
 
             ->when($request->search, function ($q) use ($request) {

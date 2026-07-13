@@ -5,7 +5,7 @@
       @forelse($attendanceSections ?? [] as $section)
         <button type="button" data-section="{{ $section }}">{{ $section }}</button>
       @empty
-        <p class="section-empty-msg">No sections configured. Add sections under Attendance → Section Picker.</p>
+        <p class="section-empty-msg">No sections configured.</p>
       @endforelse
     </div>
   </div>

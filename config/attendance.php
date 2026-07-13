@@ -3,7 +3,7 @@
 return [
 
     /*
-    | Library-style section picker on the attendance scanner + admin settings UI.
+    | Gate picker on the attendance scanner + admin settings UI.
     */
     'section_picker_enabled' => env('ATTENDANCE_SECTION_PICKER_ENABLED', false),
 

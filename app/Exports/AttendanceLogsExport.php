@@ -23,6 +23,7 @@ class AttendanceLogsExport implements FromCollection, WithHeadings
                 'firstname'   => $log->student->firstname ?? 'Unknown',
                 'course'      => $log->student->course ?? 'Unknown',
                 'section'     => $log->section ?? '—',
+                'gate'        => $log->gate ?? '—',
                 'status'      => strtoupper($log->status),
                 'scanned_at'  => $log->scanned_at?->format('Y-m-d h:i A') ?? '—',
             ];
@@ -36,6 +37,7 @@ class AttendanceLogsExport implements FromCollection, WithHeadings
             'First Name',
             'Course',
             'Section',
+            'Gate',
             'Status',
             'Scanned At',
         ];

@@ -16,7 +16,14 @@
       <img src="{{ asset('images/pantasLogo.png') }}" alt="Logo">
       <div class="system-title">Face Gate Terminal</div>
     </div>
-    <a href="{{ route('attendance.scan') }}" class="scan-header-link ms-3">Gate terminal</a>
+    <div class="header-actions">
+      <div class="gate-terminal-badge" id="gateTerminalBadge" hidden>
+        <span class="gate-terminal-badge__label">Gate:</span>
+        <strong id="gateTerminalLabel"></strong>
+        <button type="button" class="gate-terminal-badge__change" id="gateTerminalChange">Change</button>
+      </div>
+      <a href="{{ route('attendance.scan') }}" class="scan-header-link">Gate terminal</a>
+    </div>
   </div>
 </header>
 
@@ -59,8 +66,19 @@
   'attendanceSections' => $attendanceSections ?? [],
 ])
 
+@include('attendance.partials.gate-terminal')
+
 <audio id="scanAlarmSound" src="{{ asset('sounds/alarm.wav') }}" preload="auto"></audio>
 
+<script>
+  window.GATE_TERMINAL_CONFIG = {
+    availableUrl: @json(route('attendance.gates.available')),
+    claimUrl: @json(route('attendance.gates.claim')),
+    pingUrl: @json(route('attendance.gates.ping')),
+    csrf: @json(csrf_token()),
+  };
+</script>
+<script src="{{ \App\Support\VersionedAsset::url('js/gate-terminal-kiosk.js') }}"></script>
 <script>
   window.FACE_KIOSK_CONFIG = {
     identifyUrl: @json(route('attendance.face.identify')),

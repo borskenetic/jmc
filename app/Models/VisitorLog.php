@@ -10,6 +10,7 @@ class VisitorLog extends Model
     protected $fillable = [
         'visitor_id',
         'status',
+        'gate',
         'scanned_at',
     ];
 

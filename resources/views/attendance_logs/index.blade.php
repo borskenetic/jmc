@@ -44,6 +44,7 @@
                 Gate Terminal
             </a>
             <a href="{{ route('attendance_logs.reports.hub') }}" class="al-btn al-btn--ghost">Reports</a>
+            <a href="{{ route('attendance.gate.settings') }}" class="al-btn al-btn--ghost">Gates</a>
             <div class="dropdown">
                 <button class="al-btn al-btn--ghost dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
                     Export
@@ -114,7 +115,7 @@
                 </div>
             </div>
 
-            <details class="al-more-filters" {{ request()->hasAny(['from', 'to', 'year', 'homeroom_section']) ? 'open' : '' }}>
+            <details class="al-more-filters" {{ request()->hasAny(['from', 'to', 'year', 'homeroom_section', 'gate']) ? 'open' : '' }}>
                 <summary>More filters</summary>
                 <div class="al-more-filters__grid">
                     <div class="al-field">
@@ -140,6 +141,15 @@
                             <option value="">All sections</option>
                             @foreach($homeroomSections as $section)
                                 <option value="{{ $section }}" @selected(request('homeroom_section') === $section)>{{ $section }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    <div class="al-field">
+                        <label for="alGate">Gate</label>
+                        <select id="alGate" name="gate">
+                            <option value="">All gates</option>
+                            @foreach($gateOptions ?? [] as $gate)
+                                <option value="{{ $gate }}" @selected(request('gate') === $gate)>{{ $gate }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -174,6 +184,9 @@
                 @if(request('homeroom_section'))
                     <a href="{{ $filterUrl([], ['homeroom_section']) }}" class="al-tag">Section: {{ request('homeroom_section') }} <span aria-hidden="true">×</span></a>
                 @endif
+                @if(request('gate'))
+                    <a href="{{ $filterUrl([], ['gate']) }}" class="al-tag">Gate: {{ request('gate') }} <span aria-hidden="true">×</span></a>
+                @endif
                 @if($currentStatus !== '')
                     <a href="{{ $filterUrl([], ['status']) }}" class="al-tag">Status: {{ $currentStatus }} <span aria-hidden="true">×</span></a>
                 @endif
@@ -201,6 +214,7 @@
                         <th>Student</th>
                         <th>Grade</th>
                         <th>Section</th>
+                        <th>Gate</th>
                         <th>Status</th>
                         <th>Scanned</th>
                     </tr>
@@ -232,7 +246,8 @@
                                 </div>
                             </td>
                             <td data-label="Grade">{{ $student?->year ?? '—' }}</td>
-                            <td data-label="Section">{{ $student?->section ?? '—' }}</td>
+                            <td data-label="Section">{{ $log->section ?? ($student?->section ?? '—') }}</td>
+                            <td data-label="Gate">{{ $log->gate ?? '—' }}</td>
                             <td data-label="Status">
                                 @if($status === 'IN')
                                     <span class="al-status al-status--in">IN</span>

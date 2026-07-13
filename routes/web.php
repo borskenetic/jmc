@@ -51,6 +51,9 @@ Route::post('/attendance', [AttendanceController::class, 'scan'])->name('attenda
 Route::post('/attendance/face', [AttendanceController::class, 'identifyByFace'])->name('attendance.face.identify');
 Route::post('/attendance/section', [AttendanceController::class, 'processSection'])->name('attendance.section');
 Route::post('/attendance/visitor', [AttendanceController::class, 'processVisitor'])->name('attendance.visitor');
+Route::get('/attendance/gates/available', [AttendanceController::class, 'availableGates'])->name('attendance.gates.available');
+Route::post('/attendance/gates/claim', [AttendanceController::class, 'claimGate'])->name('attendance.gates.claim');
+Route::post('/attendance/gates/ping', [AttendanceController::class, 'pingGate'])->name('attendance.gates.ping');
 Route::post('/attendance-feedback', [FeedController::class, 'store'])->name('attendance.feedback.store');
 
 // Admin + Staff
@@ -88,8 +91,8 @@ Route::middleware(['auth', 'can:isAdminOrStaff'])->group(function () {
     Route::post('/attendance/upload-video', [AttendanceController::class, 'uploadVideo'])->name('attendance.uploadVideo');
     Route::get('/attendance/logout-feedback', [AttendanceController::class, 'feedbackSettings'])->name('attendance.feedback.settings');
     Route::post('/attendance/logout-feedback', [AttendanceController::class, 'updateFeedbackSettings'])->name('attendance.feedback.settings.update');
-    Route::get('/attendance/section-picker', [AttendanceController::class, 'sectionSettings'])->name('attendance.section.settings');
-    Route::post('/attendance/section-picker', [AttendanceController::class, 'updateSectionSettings'])->name('attendance.section.settings.update');
+    Route::get('/attendance/gates', [AttendanceController::class, 'gateSettings'])->name('attendance.gate.settings');
+    Route::post('/attendance/gates', [AttendanceController::class, 'updateGateSettings'])->name('attendance.gate.settings.update');
 
     Route::get('/admin/feedbacks', [FeedController::class, 'index'])->name('feedback.index');
 
