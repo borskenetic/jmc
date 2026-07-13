@@ -3,6 +3,7 @@
 <head>
   <title>{{ config('app.name') }} — Gate Terminal</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="csrf-token" content="{{ csrf_token() }}">
   <link rel="stylesheet" href="{{ \App\Support\Branding::stylesheetUrl() }}">
   <link rel="stylesheet" href="{{ \App\Support\VersionedAsset::url('css/attendance/scan.css') }}">
   <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
@@ -20,6 +21,7 @@
         <strong id="gateTerminalLabel"></strong>
         <button type="button" class="gate-terminal-badge__change" id="gateTerminalChange">Change</button>
       </div>
+      <a href="{{ route('home') }}" class="scan-header-link">Home</a>
       @if(config('face.enabled'))
         <a href="{{ route('attendance.face') }}" class="scan-header-link">Face gate terminal</a>
       @endif

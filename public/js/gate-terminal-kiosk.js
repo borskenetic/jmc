@@ -5,16 +5,19 @@
   const STORAGE_TOKEN = 'attendance_terminal_token';
   const STORAGE_GATE = 'attendance_gate_terminal';
 
+  const boundButtons = new WeakSet();
+
   function cfg() {
     return window.GATE_TERMINAL_CONFIG || {};
   }
 
   function headers() {
     const c = cfg();
+    const metaCsrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
     return {
       'Content-Type': 'application/json',
       Accept: 'application/json',
-      'X-CSRF-TOKEN': c.csrf || '',
+      'X-CSRF-TOKEN': c.csrf || metaCsrf,
     };
   }
 
@@ -62,6 +65,11 @@
     badge.hidden = false;
   }
 
+  function setLoading(isLoading) {
+    const el = document.getElementById('gateTerminalLoading');
+    if (el) el.hidden = !isLoading;
+  }
+
   function openModal() {
     const modal = document.getElementById('gateTerminalModal');
     if (!modal) return;
@@ -79,27 +87,69 @@
 
   async function fetchAvailable() {
     const c = cfg();
+    if (!c.availableUrl) {
+      throw new Error('Gate terminal is not configured.');
+    }
+
     const url = new URL(c.availableUrl, window.location.origin);
     url.searchParams.set('terminal_token', terminalToken());
 
     const res = await fetch(url.toString(), { headers: { Accept: 'application/json' } });
-    if (!res.ok) throw new Error('Failed to load gates');
+    if (!res.ok) {
+      throw new Error('Failed to load gates (' + res.status + ')');
+    }
     return res.json();
   }
 
   async function claimGate(gate) {
     const c = cfg();
+    if (!c.claimUrl) {
+      throw new Error('Gate terminal is not configured.');
+    }
+
     const res = await fetch(c.claimUrl, {
       method: 'POST',
       headers: headers(),
       body: JSON.stringify({ terminal_token: terminalToken(), gate }),
     });
-    const data = await res.json();
+
+    let data = {};
+    try {
+      data = await res.json();
+    } catch (e) {
+      data = {};
+    }
+
     if (!res.ok) {
       throw new Error(data.message || 'Could not claim gate');
     }
+
     setGate(data.gate || gate);
     closeModal();
+  }
+
+  function bindGateButton(btn) {
+    if (!btn || boundButtons.has(btn)) return;
+    boundButtons.add(btn);
+
+    btn.addEventListener('click', async () => {
+      const gate = btn.dataset.gate;
+      if (!gate) return;
+
+      btn.disabled = true;
+      try {
+        await claimGate(gate);
+      } catch (e) {
+        alert(e.message || 'Gate unavailable. Try another.');
+        refreshButtons();
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  }
+
+  function bindExistingButtons() {
+    document.querySelectorAll('#gateTerminalButtons button[data-gate]').forEach(bindGateButton);
   }
 
   function renderButtons(gates) {
@@ -109,6 +159,8 @@
 
     container.innerHTML = '';
     const list = Array.isArray(gates) ? gates : [];
+
+    container.dataset.count = String(list.length);
 
     if (list.length === 0) {
       if (empty) empty.hidden = false;
@@ -122,19 +174,13 @@
       btn.type = 'button';
       btn.dataset.gate = gate;
       btn.textContent = gate;
-      btn.addEventListener('click', async () => {
-        try {
-          await claimGate(gate);
-        } catch (e) {
-          alert(e.message || 'Gate unavailable. Try another.');
-          refreshButtons();
-        }
-      });
       container.appendChild(btn);
+      bindGateButton(btn);
     });
   }
 
   async function refreshButtons() {
+    setLoading(true);
     try {
       const data = await fetchAvailable();
       if (data.current_gate && !getGate()) {
@@ -142,21 +188,28 @@
       }
       renderButtons(data.gates || []);
     } catch (e) {
-      renderButtons([]);
+      bindExistingButtons();
+      const container = document.getElementById('gateTerminalButtons');
+      const empty = document.getElementById('gateTerminalEmpty');
+      const hasButtons = container && container.querySelectorAll('button[data-gate]').length > 0;
+      if (empty) empty.hidden = hasButtons;
+    } finally {
+      setLoading(false);
     }
   }
 
   async function requireSelection() {
     updateBadge();
+
     if (getGate()) {
       try {
         await claimGate(getGate());
+        return;
       } catch (e) {
         setGate('');
-        openModal();
       }
-      return;
     }
+
     openModal();
   }
 
@@ -190,6 +243,7 @@
 
   function init() {
     bindChange();
+    bindExistingButtons();
     requireSelection();
     setInterval(ping, 60000);
   }

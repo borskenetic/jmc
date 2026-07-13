@@ -85,6 +85,24 @@ body.scan-kiosk-page {
 
     .header-actions > a { margin-left: 0; }
 
+    .scan-header-link {
+      color: var(--brand-primary-darker, #125a82);
+      font-weight: 600;
+      font-size: 0.875rem;
+      text-decoration: none;
+      white-space: nowrap;
+    }
+
+    .scan-header-link:hover {
+      color: var(--brand-primary, #29abe2);
+    }
+
+    .gate-terminal-modal__loading {
+      margin: 0.5rem 0 0;
+      color: #5a6b7a;
+      font-size: 0.9rem;
+    }
+
     .header img {
       width: clamp(240px, 28vw, 360px);
       height: auto;
